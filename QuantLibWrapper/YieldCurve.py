@@ -30,6 +30,7 @@ class YieldCurve:
         plt.plot(times,continuousForwd, label='Cont. forward rate')
         plt.plot(times,continuousZeros, label='Cont. zero rate')
         plt.plot(times,annualZeros,     label='Annually comp. zero rate')
+        plt.legend()
         plt.xlabel('Maturity')
         plt.ylabel('Interest rate')
         plt.show()
