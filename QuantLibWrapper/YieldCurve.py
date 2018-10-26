@@ -19,6 +19,9 @@ class YieldCurve:
     # zero coupon bond
     def discount(self,dateOrTime):
         return self.yts.discount(dateOrTime,True)
+
+    def forwardRate(self,time):
+        return self.yts.forwardRate(time,time,ql.Continuous,ql.Annual,True).rate()
   
     # plot zero rates and forward rate
     def plot(self,stepsize=0.1):

@@ -7,5 +7,9 @@ from Helpers import Black, Bachelier, BlackImpliedVol, BachelierImpliedVol
 
 from SabrModel import SabrModel
 
+from HullWhiteModel import HullWhiteModel
+
 from MCSimulation import MCSimulation
+
+from Payoffs import Pay, VanillaOption, CouponBond
 
