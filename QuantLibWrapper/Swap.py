@@ -8,10 +8,10 @@ class Swap:
     # Python constructor
     def __init__(self, startDate, endDate, fixedRate, discYieldCurve, projYieldCurve):
         # we need handles of the yield curves...
-        discHandle = ql.RelinkableYieldTermStructureHandle()
-        projHandle = ql.RelinkableYieldTermStructureHandle()
-        discHandle.linkTo(projYieldCurve.yts)
-        projHandle.linkTo(discYieldCurve.yts)
+        self.discHandle = ql.RelinkableYieldTermStructureHandle()
+        self.projHandle = ql.RelinkableYieldTermStructureHandle()
+        self.discHandle.linkTo(discYieldCurve.yts)
+        self.projHandle.linkTo(projYieldCurve.yts)  
         # schedule generation details
         fixedLegTenor = ql.Period('1y')
         floatLegTenor = ql.Period('6m')
@@ -29,21 +29,21 @@ class Swap:
                           floatLegAdjustment, floatLegAdjustment,
                           ql.DateGeneration.Backward, endOfMonthFlag)
         # interest rate details
-        index = ql.Euribor(floatLegTenor,projHandle)
+        index = ql.Euribor(floatLegTenor,self.projHandle)
         spread = 0.0   # no floating rate spread applied
         fixedLegDayCounter = ql.Thirty360()
         floatLegDayCounter = index.dayCounter()
         # paymentAdjustment  = ql.Following ... not exposed to user via Python
         # notional and payer/receiver
-        notional = 1.0e+8
-        payerOrReceiver = ql.VanillaSwap.Payer
+        notional = 1.0e+4
+        self.payerOrReceiver = ql.VanillaSwap.Payer
         # swap creation
-        self.swap = ql.VanillaSwap(payerOrReceiver, notional,
+        self.swap = ql.VanillaSwap(self.payerOrReceiver, notional,
                    fixedSchedule, fixedRate, fixedLegDayCounter,
                    floatSchedule, index, spread,
                    floatLegDayCounter)
         # pricing engine to allow discounting etc.
-        swapEngine = ql.DiscountingSwapEngine(discHandle)
+        swapEngine = ql.DiscountingSwapEngine(self.discHandle)
         self.swap.setPricingEngine(swapEngine)
 
     def npv(self):
@@ -51,19 +51,29 @@ class Swap:
 
     def fairRate(self):
         return self.swap.fairRate()
+
+    def annuity(self):
+        return abs(self.swap.fixedLegBPS())/1.0e-4
     
     def fixedCashFlows(self):
         table = pandas.DataFrame( [
+            [ql.as_fixed_rate_coupon(cf).accrualStartDate() for cf in self.swap.fixedLeg()],
+            [ql.as_fixed_rate_coupon(cf).accrualEndDate()   for cf in self.swap.fixedLeg()],
+            [ql.as_fixed_rate_coupon(cf).rate()             for cf in self.swap.fixedLeg()],
             [cf.date()   for cf in self.swap.fixedLeg()],
             [cf.amount() for cf in self.swap.fixedLeg()]
             ] ).T
-        table.columns = [ 'Date', 'Amount' ]  
+        table.columns = [ 'AccrualStartDate', 'AccrualEndDate', 'Rate', 'PayDate', 'Amount' ]  
         return table
 
     def floatCashFlows(self):
         table = pandas.DataFrame( [
+            [ql.as_floating_rate_coupon(cf).accrualStartDate() for cf in self.swap.floatingLeg()],
+            [ql.as_floating_rate_coupon(cf).accrualEndDate()   for cf in self.swap.floatingLeg()],
+            [ql.as_floating_rate_coupon(cf).rate()             for cf in self.swap.floatingLeg()],
             [cf.date()   for cf in self.swap.floatingLeg()],
-            [cf.amount() for cf in self.swap.floatingLeg()]
+            [cf.amount() for cf in self.swap.floatingLeg()],
+            [ql.as_floating_rate_coupon(cf).fixingDate() for cf in self.swap.floatingLeg()]
             ] ).T
-        table.columns = [ 'Date', 'Amount' ]  
+        table.columns = [ 'AccrualStartDate', 'AccrualEndDate', 'Rate', 'PayDate', 'Amount', 'FixingDate' ]  
         return table

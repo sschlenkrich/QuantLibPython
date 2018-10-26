@@ -44,6 +44,8 @@ class YieldCurve:
         table.columns = [ 'Terms', 'Dates', 'Rates' ]
         return table
 
+    def referenceDate(self):
+        return self.referenceDate()
 
 # end of YieldCurve
 

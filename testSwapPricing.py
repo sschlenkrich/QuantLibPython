@@ -42,14 +42,16 @@ rates = [       \
 rates2 = [ r+0.005 for r in rates ]
 
 discCurve = yc.YieldCurve(terms,rates)
-projCurve = yc.YieldCurve(terms,rates)
+projCurve = yc.YieldCurve(terms,rates2)
 
 startDate = ql.Date(30, 10, 2018)
 endDate = ql.Date(30, 10, 2038)
 
-swap = sw.Swap(startDate,endDate,0.03,discCurve,projCurve)
+swap = sw.Swap(startDate,endDate,0.05,discCurve,projCurve)
 
-print('NPV:      '+str(swap.npv()))
-print('FairRate: '+str(swap.fairRate()))
+print('NPV:      %11.2f' % (swap.npv()))
+print('FairRate: %11.6f' % (swap.fairRate()))
+print('Annuity:  %11.2f' % (swap.annuity()))
 
-
+print(swap.fixedCashFlows())
+print(swap.floatCashFlows())
