@@ -3,6 +3,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+
 import pandas
 
 import QuantLib as ql
@@ -35,6 +37,8 @@ stepsize   = 1.0/365
 
 times       = [ k*stepsize for k in range(int(round(30.0/stepsize,0))+1) ]
 forwardRate = [ hwModel.yieldCurve.forwardRate(T) for  T in times ]
+fig = plt.figure(figsize=(4, 6))
+ax = fig.gca()
 plt.plot(times,forwardRate, label='f(0,T)')
 times = [ k*stepsize+futureTime for k in range(int(round(30.0/stepsize,0))+1) ]
 for x in states:
@@ -42,8 +46,10 @@ for x in states:
     plt.plot(times,forwardRate, label='x='+str(x))
 
 plt.legend()
-plt.xlabel('Maturity')
-plt.ylabel('Interest rate')
+plt.xlabel('Maturity T')
+plt.ylabel('Forward rate f(t,T)')
+ax.yaxis.set_major_formatter(FormatStrFormatter('%4.2f'))
+plt.title('a = %4.2f' % meanReversion)
 plt.show()
 
 # now we analyse coupon bond opition pricing
@@ -65,7 +71,7 @@ puts      = [ hwModel.couponBondOption(exercise,payTimes,cashFlows,strike,-1.0) 
 # first we simulate all paths
 
 times  = np.array([k*0.1 for k in range(121)])
-nPaths = 1000
+nPaths = 100
 mcSim  = MCSimulation(hwModel,times,nPaths)
 
 # then calculate the payoffs

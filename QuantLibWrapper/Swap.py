@@ -6,7 +6,11 @@ import QuantLib as ql
 class Swap:
 
     # Python constructor
-    def __init__(self, startDate, endDate, fixedRate, discYieldCurve, projYieldCurve):
+    def __init__(self, startDate, endDate, fixedRate, discYieldCurve, projYieldCurve, payerOrReceiver=ql.VanillaSwap.Payer, notional=1.0e+4):
+        # we need some swap details for swaption pricing
+        self.payerOrReceiver = payerOrReceiver
+        self.notional        = notional
+        self.fixedRate       = fixedRate        
         # we need handles of the yield curves...
         self.discHandle = ql.RelinkableYieldTermStructureHandle()
         self.projHandle = ql.RelinkableYieldTermStructureHandle()
@@ -34,11 +38,8 @@ class Swap:
         fixedLegDayCounter = ql.Thirty360()
         floatLegDayCounter = index.dayCounter()
         # paymentAdjustment  = ql.Following ... not exposed to user via Python
-        # notional and payer/receiver
-        notional = 1.0e+4
-        self.payerOrReceiver = ql.VanillaSwap.Payer
         # swap creation
-        self.swap = ql.VanillaSwap(self.payerOrReceiver, notional,
+        self.swap = ql.VanillaSwap(self.payerOrReceiver, self.notional,
                    fixedSchedule, fixedRate, fixedLegDayCounter,
                    floatSchedule, index, spread,
                    floatLegDayCounter)

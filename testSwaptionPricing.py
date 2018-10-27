@@ -39,8 +39,8 @@ print('ExpiryTime: ' + str(details['expiryTime']))
 print('Strike:     ' + str(details['strike']))
 print('CallOrPut:  ' + str(details['callOrPut']))
 
-table = pandas.DataFrame( [ details['payTimes'], details['caschflows'],
+table = pandas.DataFrame( [ details['payTimes'], details['cashFlows'],
     [ discCurve.discount(T) for T in details['payTimes'] ] ]).T
-table.columns = [ 'payTimes', 'caschflows', 'DF' ]
+table.columns = [ 'payTimes', 'cashFlows', 'DF' ]
 print(table)
 

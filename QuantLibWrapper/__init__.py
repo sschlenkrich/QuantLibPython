@@ -14,4 +14,4 @@ from MCSimulation import MCSimulation
 
 from Payoffs import Pay, VanillaOption, CouponBond
 
-from Swaption import Swaption
+from Swaption import Swaption, createSwaption

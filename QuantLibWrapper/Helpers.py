@@ -28,5 +28,5 @@ def Bachelier(strike, forward, sigma, T, callOrPut):
 def BachelierImpliedVol(price, strike, forward, T, callOrPut):
     def objective(sigma):
         return Bachelier(strike, forward, sigma, T, callOrPut) - price
-    return brentq(objective,0.01*forward, 1.00*forward, xtol=1.0e-8)
+    return brentq(objective,1e-4, 1e-1, xtol=1.0e-8)
 
