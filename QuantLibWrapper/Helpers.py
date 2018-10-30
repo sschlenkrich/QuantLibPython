@@ -11,7 +11,10 @@ def BlackOverK(moneyness, stdDev, callOrPut):
     return callOrPut * (moneyness*norm.cdf(callOrPut*d1)-norm.cdf(callOrPut*d2))
 
 def Black(strike, forward, sigma, T, callOrPut):
-    return strike * BlackOverK(forward/strike,sigma*np.sqrt(T),callOrPut)
+    nu = sigma*np.sqrt(T)
+    if nu<1.0e-12:   # assume zero
+        return max(callOrPut*(forward-strike),0.0)  # intrinsic value
+    return strike * BlackOverK(forward/strike,nu,callOrPut)
 
 def BlackImpliedVol(price, strike, forward, T, callOrPut):
     def objective(sigma):

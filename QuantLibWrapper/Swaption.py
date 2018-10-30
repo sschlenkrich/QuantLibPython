@@ -5,6 +5,7 @@ import QuantLib as ql
 
 from Helpers import BachelierImpliedVol
 from Swap import Swap
+from Payoffs import CouponBond
 
 class Swaption:
 
@@ -28,7 +29,7 @@ class Swaption:
         return self.underlyingSwap.annuity()
 
     def bondOptionDetails(self):
-        # calculate expiryTime, payTimes, cashFlows, strike and
+        # calculate expiryTime, (coupon) startTims, payTimes, cashFlows, strike and
         # c/p flag as inputs to Hull White analytic formula
         details = {}
         details['callOrPut'] = 1.0 if self.underlyingSwap.payerOrReceiver==ql.VanillaSwap.Receiver else -1.0
@@ -68,6 +69,11 @@ class Swaption:
             self.underlyingSwap.fairRate(), details['expiryTime'], -details['callOrPut'])
         if outFlag=='v': return vol
         return [ npv, vol ]
+
+    def payoff(self, hwModel):   # create a CouponBond payoff
+        details = self.bondOptionDetails()
+        cashFlowsCoP = [ details['callOrPut']*cf for cf in details['cashFlows'] ]
+        return CouponBond(hwModel,details['expiryTime'],details['payTimes'],cashFlowsCoP)
 
 # we provide an easy contructor function for convenience
 

@@ -14,4 +14,8 @@ from MCSimulation import MCSimulation
 
 from Payoffs import Pay, VanillaOption, CouponBond
 
+from BermudanOption import BermudanOption
+
+from DensityIntegration import DensityIntegration
+
 from Swaption import Swaption, createSwaption

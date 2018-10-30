@@ -20,7 +20,7 @@ flatCurve = yc.YieldCurve(['30y'],[0.03])
 
 # We calibrate a Hull-White model to 100bp 'volatility' of x at 10y and 11y
 
-meanReversion    = -0.2
+meanReversion    = 0.2
 
 def obj1(sigma1):
     model = HullWhiteModel(flatCurve,meanReversion,[5.0, 10.0],[sigma1, sigma1])
@@ -37,7 +37,7 @@ model = HullWhiteModel(flatCurve,meanReversion,[1.0, 10.0],[sigma1, sigma2])
 
 
 times  = np.array([k*0.1 for k in range(101)])
-nPaths = 10
+nPaths = 50
 mcSim  = MCSimulation(model,times,nPaths)
 
 fig = plt.figure(figsize=(4, 6))

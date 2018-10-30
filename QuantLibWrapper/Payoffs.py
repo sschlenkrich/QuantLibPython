@@ -13,6 +13,14 @@ class Pay:
     def at(self,x):
         return self.payoff.at(x)
 
+class Zero:
+    def at(self,x):
+        return 0.0
+
+class One:
+    def at(self,x):
+        return 1.0
+
 class VanillaOption:
     # Python constructor
     def __init__(self, underlying, strike, callOrPut):
