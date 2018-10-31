@@ -16,6 +16,6 @@ from Payoffs import Pay, VanillaOption, CouponBond
 
 from BermudanOption import BermudanOption
 
-from DensityIntegration import DensityIntegration
+from DensityIntegrations import  DensityIntegrationWithBreakEven, SimpsonIntegration, HermiteIntegration, CubicSplineExactIntegration
 
 from Swaption import Swaption, createSwaption

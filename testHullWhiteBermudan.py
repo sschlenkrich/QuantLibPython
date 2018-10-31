@@ -10,7 +10,9 @@ import pandas
 import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
 
-from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, DensityIntegration
+from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, \
+                            DensityIntegrationWithBreakEven, SimpsonIntegration, \
+                            HermiteIntegration, CubicSplineExactIntegration 
 
 # yield curves
 
@@ -27,7 +29,12 @@ volatilityTimes  = [  1.0 , 2.0 , 5.0 , 10.0  ]
 volatilityValues = [  0.01, 0.01, 0.01,  0.01 ]
 
 hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
-method           = DensityIntegration(hwModel,201,5)
+#method           = SimpsonIntegration(hwModel,101,5)
+#method           = DensityIntegrationWithBreakEven(SimpsonIntegration(hwModel,101,5))
+#method           = HermiteIntegration(hwModel,10,101,5)
+#method           = CubicSplineExactIntegration(hwModel,101,5)
+method           = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hwModel,11,5))
+
 
 # now we test coupon bond opition pricing
 
