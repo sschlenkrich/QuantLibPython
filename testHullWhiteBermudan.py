@@ -12,7 +12,8 @@ import QuantLibWrapper.YieldCurve as yc
 
 from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, \
                             DensityIntegrationWithBreakEven, SimpsonIntegration, \
-                            HermiteIntegration, CubicSplineExactIntegration 
+                            HermiteIntegration, CubicSplineExactIntegration, \
+                            PDESolver 
 
 # yield curves
 
@@ -33,7 +34,9 @@ hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volati
 #method           = DensityIntegrationWithBreakEven(SimpsonIntegration(hwModel,101,5))
 #method           = HermiteIntegration(hwModel,10,101,5)
 #method           = CubicSplineExactIntegration(hwModel,101,5)
-method           = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hwModel,11,5))
+#method           = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hwModel,101,5))
+#method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0,0.0)
+method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0)
 
 
 # now we test coupon bond opition pricing

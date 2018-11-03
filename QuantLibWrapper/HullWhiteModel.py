@@ -54,6 +54,14 @@ class HullWhiteModel:
         integral = (T-t) / 6 * (f(t) + 4*f((t+T)/2) + f(T)) 
         return self.GPrime(t,T)*xt + integral
     
+    def sigma(self,t):   # Todo test this method
+        # find idx s.t. t[idx-1] <= t < t[idx]
+        idx = len(self.volatilityTimes)-1
+        for i in range(len(self.volatilityTimes),0,-1):   # better use bisection here
+            idx = (i-1) if (t<self.volatilityTimes[i-1]) else idx
+        return self.volatilityValues[min(idx+1,len(self.volatilityValues)-1)]
+
+
     # model methods
 
     # conditional expectation in T-forward measure
