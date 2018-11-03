@@ -5,6 +5,9 @@ import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
 import QuantLibWrapper.Swap as sw
 
+today = ql.Date(3,9,2018)
+ql.Settings.setEvaluationDate(ql.Settings.instance(),today)
+
 terms = [     \
         '1y', \
         '2y', \
