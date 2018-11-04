@@ -71,7 +71,7 @@ puts      = [ hwModel.couponBondOption(exercise,payTimes,cashFlows,strike,-1.0) 
 # first we simulate all paths
 
 times  = np.array([k*0.1 for k in range(121)])
-nPaths = 100
+nPaths = 10000
 mcSim  = MCSimulation(hwModel,times,nPaths)
 
 # then calculate the payoffs
@@ -93,3 +93,11 @@ plt.legend()
 plt.xlabel('Strike')
 plt.ylabel('Bond option price')
 plt.show()
+
+table = pandas.DataFrame( [
+    mcStrikes, 
+    [ hwModel.couponBondOption(exercise,payTimes,cashFlows,strike,1.0)  for strike in mcStrikes ],
+    [ hwModel.couponBondOption(exercise,payTimes,cashFlows,strike,-1.0)  for strike in mcStrikes ],
+    callsMC, putsMC ] ).T
+table.columns = [ 'mcStrikes', 'calls', 'puts', 'callsMC', 'callsMC' ]  
+print(table)

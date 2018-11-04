@@ -17,7 +17,7 @@ class MCSimulation:
         # simulate states
         self.X = np.zeros([self.nPaths,len(self.times),model.size()])
         for i in range(self.nPaths):
-            if i % int(self.nPaths/10) == 0 : print('s', end='', flush=True)
+            if i % max(int(self.nPaths/10),1) == 0 : print('s', end='', flush=True)
             self.X[i][0] = self.model.initialValues()
             for j in range(len(self.times)-1):
                 self.X[i][j+1] = model.evolve(self.times[j],self.X[i][j],times[j+1]-times[j],self.dW[i][j])

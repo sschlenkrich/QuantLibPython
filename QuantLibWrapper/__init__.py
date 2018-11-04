@@ -21,3 +21,7 @@ from DensityIntegrations import  DensityIntegrationWithBreakEven, SimpsonIntegra
 from Swaption import Swaption, createSwaption
 
 from PDESolver import PDESolver
+
+from AMCSolver import AMCSolver
+
+from Regression import Regression, MultiIndexSet

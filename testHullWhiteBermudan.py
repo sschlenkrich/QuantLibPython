@@ -13,7 +13,7 @@ import QuantLibWrapper.YieldCurve as yc
 from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, \
                             DensityIntegrationWithBreakEven, SimpsonIntegration, \
                             HermiteIntegration, CubicSplineExactIntegration, \
-                            PDESolver 
+                            PDESolver, AMCSolver 
 
 # yield curves
 
@@ -36,8 +36,12 @@ hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volati
 #method           = CubicSplineExactIntegration(hwModel,101,5)
 #method           = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hwModel,101,5))
 #method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0,0.0)
-method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0)
+#method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0)
 
+times  = np.linspace(0.0,19.0,20)
+nPaths = 10000
+mcSim  = MCSimulation(hwModel,times,nPaths)
+method = AMCSolver(mcSim,20.0,2,0.1)
 
 # now we test coupon bond opition pricing
 
@@ -50,10 +54,12 @@ cashFlows = [ -1.0, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03,  1.0 ]
 print('Bond option with zero strike: ' + str(hwModel.couponBondOption(exercise,payTimes,cashFlows,0.0,1.0)))
 print('Bond option with unit strike: ' + str(hwModel.couponBondOption(exercise,payTimes[1:],cashFlows[1:],1.0,1.0)))
 
-expiryTimes = np.array([ 2.0, 5.0, 12.0])
+expiryTimes = np.array([ 2.0, 6.0, 12.0])
 underlyings = [ Payoffs.Zero(), Payoffs.Zero(), Payoffs.CouponBond(hwModel,12.0,payTimes,cashFlows) ]
 berm = BermudanOption(expiryTimes, underlyings, method)
 print('Pseudo-Bermudan opt. (3 ex.): ' + str(berm.npv()))
+payoff = Payoffs.Pay(Payoffs.VanillaOption(Payoffs.CouponBond(hwModel,12.0,payTimes,cashFlows),0.0,1.0),12.0)
+print('MC bond option              : ' + str(mcSim.npv(payoff)))  
 
 # test Bermudan bond option pricing
 
