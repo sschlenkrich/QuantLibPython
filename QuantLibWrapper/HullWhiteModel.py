@@ -34,13 +34,12 @@ class HullWhiteModel:
         return np.exp(-self.meanReversion*(T-t))
         
     def y(self,t):
-        # find idx s.t. t[idx-1] <= t < t[idx]
-        idx = len(self.volatilityTimes)-1
-        for i in range(len(self.volatilityTimes),0,-1):   # better use bisection here
-            idx = (i-1) if (t<self.volatilityTimes[i-1]) else idx
-        t0 = 0.0 if (idx<0) else self.volatilityTimes[idx]
-        y0 = 0.0 if (idx<0) else self.y_[idx]
-        s1 = self.volatilityValues[min(idx+1,len(self.volatilityValues)-1)]
+        # find idx s.t. t[idx] < t < t[idx+1]
+        idxSet = np.where(self.volatilityTimes<t)[0]
+        idx = -1 if (idxSet.shape[0]==0) else idxSet[-1]
+        t0 = 0.0 if (idxSet.shape[0]==0) else self.volatilityTimes[idx]
+        y0 = 0.0 if (idxSet.shape[0]==0) else self.y_[idx]
+        s1 = self.volatilityValues[min(idx+1,len(self.volatilityValues)-1)]  # flat extrapolation
         y1 = (self.GPrime(t0,t)**2) * y0 +                      \
                 s1**2 * (1.0 - np.exp(-2*self.meanReversion*(t-t0))) /  \
                 (2.0 * self.meanReversion)
@@ -55,10 +54,9 @@ class HullWhiteModel:
         return self.GPrime(t,T)*xt + integral
     
     def sigma(self,t):   # Todo test this method
-        # find idx s.t. t[idx-1] <= t < t[idx]
-        idx = len(self.volatilityTimes)-1
-        for i in range(len(self.volatilityTimes),0,-1):   # better use bisection here
-            idx = (i-1) if (t<self.volatilityTimes[i-1]) else idx
+        # find idx s.t. t[idx] < t < t[idx+1]
+        idxSet = np.where(self.volatilityTimes<t)[0]
+        idx = -1 if (idxSet.shape[0]==0) else idxSet[-1]
         return self.volatilityValues[min(idx+1,len(self.volatilityValues)-1)]
 
 
@@ -130,3 +128,21 @@ class HullWhiteModel:
         # gather results
         return np.array([x1, s1])          
         
+
+class HullWhiteModelWithDiscreteNumeraire(HullWhiteModel):
+
+    # Python constructor
+    def __init__(self, yieldCurve, meanReversion, volatilityTimes, volatilityValues):
+        HullWhiteModel.__init__(self,yieldCurve,meanReversion,volatilityTimes,volatilityValues)
+
+    # evolve X(t0) -> X(t0+dt) using independent Brownian increments dW
+    # t0, dt are assumed float, X0, X1, dW are np.array,
+    # simulation is done with discretely compounded bank account numeraire
+    # and rolling T-forward measure
+    def evolve(self, t0, X0, dt, dW):
+        x1 = self.expectationX(t0,X0[0],t0+dt)
+        nu = np.sqrt(self.varianceX(t0,t0+dt))
+        x1 = x1 + nu*dW[0]
+        s1 = X0[1] + np.log(1.0/self.zeroBond(t0,X0[0],t0+dt))
+        return np.array([x1, s1])          
+    

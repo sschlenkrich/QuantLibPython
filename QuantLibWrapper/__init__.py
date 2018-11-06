@@ -8,7 +8,7 @@ from Helpers import Black, Bachelier, BlackImpliedVol, BachelierImpliedVol
 
 from SabrModel import SabrModel
 
-from HullWhiteModel import HullWhiteModel
+from HullWhiteModel import HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
 
 from MCSimulation import MCSimulation
 
