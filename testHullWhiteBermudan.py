@@ -13,7 +13,9 @@ import QuantLibWrapper.YieldCurve as yc
 from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, \
                             DensityIntegrationWithBreakEven, SimpsonIntegration, \
                             HermiteIntegration, CubicSplineExactIntegration, \
-                            PDESolver, AMCSolver 
+                            PDESolver, AMCSolver, \
+                            AMCSolverOnlyExerciseRegression, \
+                            HullWhiteModelWithDiscreteNumeraire 
 
 # yield curves
 
@@ -26,10 +28,11 @@ fwdRateYC = yc.YieldCurve(terms,rates)
 # Hull-White model
 
 meanReversion    = 0.05
-volatilityTimes  = [  1.0 , 2.0 , 5.0 , 10.0  ]
-volatilityValues = [  0.01, 0.01, 0.01,  0.01 ]
+volatilityTimes  = np.array([  1.0 , 2.0 , 5.0 , 10.0  ])
+volatilityValues = np.array([  0.01, 0.01, 0.01,  0.01 ])
 
-hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
+#hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
+hwModel          = HullWhiteModelWithDiscreteNumeraire(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
 #method           = SimpsonIntegration(hwModel,101,5)
 #method           = DensityIntegrationWithBreakEven(SimpsonIntegration(hwModel,101,5))
 #method           = HermiteIntegration(hwModel,10,101,5)
@@ -39,9 +42,11 @@ hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volati
 #method           = PDESolver(hwModel,11,2.0,0.5,1.0/12.0)
 
 times  = np.linspace(0.0,19.0,20)
+times  = np.array([0.0, 2.0, 6.0] + [ 12.0+k for k in range(8)])
 nPaths = 10000
 mcSim  = MCSimulation(hwModel,times,nPaths)
-method = AMCSolver(mcSim,20.0,2,0.1)
+method = AMCSolver(mcSim,3,0.25)
+#method = AMCSolverOnlyExerciseRegression(mcSim,3,0.25)
 
 # now we test coupon bond opition pricing
 
@@ -61,6 +66,7 @@ print('Pseudo-Bermudan opt. (3 ex.): ' + str(berm.npv()))
 payoff = Payoffs.Pay(Payoffs.VanillaOption(Payoffs.CouponBond(hwModel,12.0,payTimes,cashFlows),0.0,1.0),12.0)
 print('MC bond option              : ' + str(mcSim.npv(payoff)))  
 
+#exit()
 # test Bermudan bond option pricing
 
 expiryTimes = np.array([ 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0])

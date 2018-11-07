@@ -22,6 +22,6 @@ from Swaption import Swaption, createSwaption
 
 from PDESolver import PDESolver
 
-from AMCSolver import AMCSolver
+from AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression
 
 from Regression import Regression, MultiIndexSet

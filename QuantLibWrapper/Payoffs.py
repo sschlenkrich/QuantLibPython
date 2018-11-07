@@ -48,3 +48,26 @@ class CouponBond:
             bond += self.cashFlows[i] * self.model.zeroBondPayoff(x,self.observationTime,self.payTimes[i])
         return bond
 
+class SwapRate:
+    # Python constructor
+    def __init__(self, model, observationTime, startTime, endTime):
+        self.observationTime = observationTime
+        self.model     = model
+        # 
+        self.startTime = startTime
+        self.endTime   = endTime
+        #
+        tmp = [startTime+k for k in range(int(endTime-startTime)+1)]
+        if tmp[-1]<endTime : tmp = tmp + [endTime]
+        self.annuityTimes = np.array(tmp)
+
+    # function    
+    def at(self, x):
+        annuity = 0
+        for i in range(1,self.annuityTimes.shape[0]):
+            annuity += (self.annuityTimes[i]-self.annuityTimes[i-1]) * self.model.zeroBondPayoff(x,self.observationTime,self.annuityTimes[i])
+        floatLeg = self.model.zeroBondPayoff(x,self.observationTime,self.startTime) -  \
+                   self.model.zeroBondPayoff(x,self.observationTime,self.endTime)
+        return floatLeg / annuity
+
+

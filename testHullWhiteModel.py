@@ -10,9 +10,7 @@ import pandas
 import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
 
-from QuantLibWrapper.HullWhiteModel import HullWhiteModel
-from QuantLibWrapper import MCSimulation, Payoffs
-
+from QuantLibWrapper import MCSimulation, Payoffs, HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
 # yield curves
 
 flatCurve = yc.YieldCurve(['30y'],[0.03])
@@ -24,10 +22,11 @@ fwdRateYC = yc.YieldCurve(terms,rates)
 # Hull-White model
 
 meanReversion    = 0.05
-volatilityTimes  = [  1.0 , 2.0 , 5.0 , 10.0  ]
-volatilityValues = [  0.01, 0.01, 0.01,  0.01 ]
+volatilityTimes  = np.array([  1.0 , 2.0 , 5.0 , 10.0  ])
+volatilityValues = np.array([  0.01, 0.01, 0.01,  0.01 ])
 
-hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
+#hwModel          = HullWhiteModel(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
+hwModel          = HullWhiteModelWithDiscreteNumeraire(fwdRateYC,meanReversion,volatilityTimes,volatilityValues)
 
 # first we analyse future yield curves
 
@@ -71,7 +70,8 @@ puts      = [ hwModel.couponBondOption(exercise,payTimes,cashFlows,strike,-1.0) 
 # first we simulate all paths
 
 times  = np.array([k*0.1 for k in range(121)])
-nPaths = 10000
+times  = np.array([0.0, 12.0])
+nPaths = 1000
 mcSim  = MCSimulation(hwModel,times,nPaths)
 
 # then calculate the payoffs
