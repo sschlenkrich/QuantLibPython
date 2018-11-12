@@ -25,3 +25,5 @@ from PDESolver import PDESolver
 from AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression
 
 from Regression import Regression, MultiIndexSet
+
+from SplineInterpolation import SplineInterpolation
