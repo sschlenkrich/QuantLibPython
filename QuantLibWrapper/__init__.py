@@ -27,3 +27,5 @@ from AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression
 from Regression import Regression, MultiIndexSet
 
 from SplineInterpolation import SplineInterpolation
+
+from BermudanSwaption import BermudanSwaption

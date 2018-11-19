@@ -14,6 +14,7 @@ class Swaption:
         self.underlyingSwap = underlyingSwap
         self.exercise = ql.EuropeanExercise(expiryDate)
         self.swaption = ql.Swaption(self.underlyingSwap.swap,self.exercise,ql.Settlement.Physical)
+        self.normalVolatility = normalVolatility
         volQuote = ql.SimpleQuote(normalVolatility)
         volHandle = ql.QuoteHandle(volQuote)
         initialEngine = ql.BachelierSwaptionEngine(self.underlyingSwap.discHandle,volHandle,ql.Actual365Fixed())

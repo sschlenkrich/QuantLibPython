@@ -58,8 +58,8 @@ class PDESolver:
             VxN  = (V[-1]-V[-3])/2.0/hx
             VxxN = (V[-1]-2*V[-2]+V[-3])/hx/hx
             lambdaN = VxxN/VxN if abs(VxN)>1.0e-8 else  0.0
-            print('Vx0 = '+str('%10.6f'%Vx0)+', Vxx0 = '+str('%10.6f'%Vxx0)+', l0 = '+str('%10.6f'%lambda0)+ \
-                ', VxN = '+str('%10.6f'%VxN)+', VxxN = '+str('%10.6f'%VxxN)+', lN = '+str('%10.6f'%lambdaN)  )
+            #print('Vx0 = '+str('%10.6f'%Vx0)+', Vxx0 = '+str('%10.6f'%Vxx0)+', l0 = '+str('%10.6f'%lambda0)+ \
+            #    ', VxN = '+str('%10.6f'%VxN)+', VxxN = '+str('%10.6f'%VxxN)+', lN = '+str('%10.6f'%lambdaN)  )
         c[0]  =  2.0*(y-a*x[0] +lambda0*sigma**2/2.0)/(2.0+lambda0*hx)/hx + x[0]  + f
         c[-1] = -2.0*(y-a*x[-1]+lambdaN*sigma**2/2.0)/(2.0+lambdaN*hx)/hx + x[-1] + f
         u[0]  = -2.0*(y-a*x[0] +lambda0*sigma**2/2.0)/(2.0+lambda0*hx)/hx

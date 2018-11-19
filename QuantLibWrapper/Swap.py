@@ -11,7 +11,10 @@ class Swap:
         self.payerOrReceiver = payerOrReceiver
         self.notional        = notional
         self.fixedRate       = fixedRate        
-        # we need handles of the yield curves...
+        # for Hull-White pricing we need to reference the yield curves
+        self.discYieldCurve = discYieldCurve
+        self.projYieldCurve = projYieldCurve
+        # we need handles of the yield curves...        
         self.discHandle = ql.RelinkableYieldTermStructureHandle()
         self.projHandle = ql.RelinkableYieldTermStructureHandle()
         self.discHandle.linkTo(discYieldCurve.yts)

@@ -17,7 +17,7 @@ class BermudanOption:
                 H = np.zeros(x.shape[0])
             else:
                 [x, H] = method.rollBack(expiryTimes[k-1],expiryTimes[k],x,U,H)
-            if len(x.shape)==0:  # PDE and density integration
+            if len(x.shape)==1:  # PDE and density integration
                 U = np.array([ underlyings[k-1].at([state,0.0]) for state in x ])
             else:   # MC simulation
                 U = np.array([ underlyings[k-1].at(state) for state in x ])
