@@ -1,3 +1,7 @@
 .vscode/
 __pycache__/
 QuantLibWrapper/__pycache__/
+*.csv
+*.xls
+*.xlsx
+
