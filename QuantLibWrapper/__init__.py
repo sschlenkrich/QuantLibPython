@@ -18,7 +18,7 @@ from BermudanOption import BermudanOption
 
 from DensityIntegrations import  DensityIntegrationWithBreakEven, SimpsonIntegration, HermiteIntegration, CubicSplineExactIntegration
 
-from Swaption import Swaption, createSwaption
+from Swaption import Swaption, createSwaption, HullWhiteModelFromSwaption
 
 from PDESolver import PDESolver
 

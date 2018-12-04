@@ -3,9 +3,13 @@
 import pandas
 import QuantLib as ql
 
-from Helpers import BachelierImpliedVol
+import numpy as np
+from scipy.optimize import brentq
+
+from Helpers import Bachelier, BachelierImpliedVol, BachelierVega
 from Swap import Swap
 from Payoffs import CouponBond
+from HullWhiteModel import HullWhiteModel
 
 class Swaption:
 
@@ -28,6 +32,19 @@ class Swaption:
 
     def annuity(self):
         return self.underlyingSwap.annuity()
+    
+    def npvRaw(self):
+        # calculate npv manually using Bachelier formula
+        # use this to cross-check npv calculation via QuantLib engine
+        refDate  = self.underlyingSwap.discHandle.referenceDate()
+        T = ql.Actual365Fixed().yearFraction(refDate,self.exercise.dates()[0])
+        CallOrPutOnS = 1.0 if self.underlyingSwap.payerOrReceiver==ql.VanillaSwap.Payer else -1.0
+        return self.annuity() * Bachelier(self.underlyingSwap.fixedRate,self.fairRate(),self.normalVolatility,T,CallOrPutOnS)
+
+    def vega(self):
+        refDate  = self.underlyingSwap.discHandle.referenceDate()
+        T = ql.Actual365Fixed().yearFraction(refDate,self.exercise.dates()[0])
+        return self.annuity() * BachelierVega(self.underlyingSwap.fixedRate,self.fairRate(),self.normalVolatility,T) * 1.0e-4  # 1bp scaling
 
     def bondOptionDetails(self):
         # calculate expiryTime, (coupon) startTims, payTimes, cashFlows, strike and
@@ -39,7 +56,7 @@ class Swaption:
         details['expiryTime'] = ql.Actual365Fixed().yearFraction(refDate,self.exercise.dates()[0])
         fixedLeg = [ [ ql.Actual365Fixed().yearFraction(refDate,cf.date()), cf.amount() ]
                      for cf in self.underlyingSwap.swap.fixedLeg() ]
-        details['fixedLeg'] = fixedLeg
+        details['fixedLeg'] = np.array(fixedLeg)
         floatLeg = [ [ ql.Actual365Fixed().yearFraction(refDate,ql.as_coupon(cf).accrualStartDate()),
                        ((1 + ql.as_coupon(cf).accrualPeriod()*ql.as_coupon(cf).rate()) *
                         self.underlyingSwap.discHandle.discount(ql.as_coupon(cf).accrualEndDate()) /
@@ -47,7 +64,7 @@ class Swaption:
                        ql.as_coupon(cf).nominal() 
                        ] 
                      for cf in self.underlyingSwap.swap.floatingLeg() ]
-        details['floatLeg'] = floatLeg    
+        details['floatLeg'] = np.array(floatLeg)    
         payTimes = [ floatLeg[0][0]  ]          +       \
                    [ cf[0] for cf in floatLeg ] +       \
                    [ cf[0] for cf in fixedLeg ] +       \
@@ -57,8 +74,8 @@ class Swaption:
                      [ -cf[1] for cf in floatLeg ] +    \
                      [  cf[1] for cf in fixedLeg ] +    \
                      [ ql.as_coupon(self.underlyingSwap.swap.floatingLeg()[0]).nominal() ]
-        details['payTimes'  ] = payTimes
-        details['cashFlows'] = caschflows        
+        details['payTimes'  ] = np.array(payTimes)
+        details['cashFlows'] = np.array(caschflows)
         return details
 
     def npvHullWhite(self, hwModel, outFlag='p'):   # outFlag = [p]rice, [v]olatility or both [pv]
@@ -89,3 +106,15 @@ def createSwaption(expiryTerm, swapTerm, discCurve, projCurve, strike='ATM', pay
     swap = Swap(startDate,endDate,strike,discCurve,projCurve,payerOrReceiver)
     swaption = swaption = Swaption(swap,expiryDate,normalVolatility)
     return swaption
+
+
+def HullWhiteModelFromSwaption(swaption, meanReversion=0.01):
+    volatilityTimes  = np.array( [ swaption.bondOptionDetails()['expiryTime'] ] )
+    volatilityValues = np.array( [ swaption.normalVolatility ] )  # initial guess            
+    def objective(sigma):
+        volatilityValues[0] = sigma
+        model = HullWhiteModel(swaption.underlyingSwap.discYieldCurve,meanReversion,volatilityTimes,volatilityValues)
+        return swaption.npvHullWhite(model,'p') - swaption.npv()
+    sigma = brentq(objective,0.1*volatilityValues[0],5.0*volatilityValues[0],xtol=1.0e-8)
+    volatilityValues[0] = sigma
+    return HullWhiteModel(swaption.underlyingSwap.discYieldCurve,meanReversion,volatilityTimes,volatilityValues)

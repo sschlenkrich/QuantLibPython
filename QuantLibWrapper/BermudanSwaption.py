@@ -29,15 +29,15 @@ class BermudanSwaption:
                     volatilityValues[k] = sigma
                     model = HullWhiteModel(self.europeanSwaptions[0].underlyingSwap.discYieldCurve,self.meanReversion,volatilityTimes,volatilityValues)
                     return self.europeanSwaptions[k].npvHullWhite(model,'p') - self.europeanSwaptions[k].npv()
-                sigma = brentq(objective,0.01*volatilityValues[k],10.0*volatilityValues[k],xtol=1.0e-8)
+                sigma = brentq(objective,0.1*volatilityValues[k],5.0*volatilityValues[k],xtol=1.0e-8)
                 volatilityValues[k] = sigma
             self.model = HullWhiteModel(self.europeanSwaptions[0].underlyingSwap.discYieldCurve,self.meanReversion,volatilityTimes,volatilityValues)
             print('.')
         if method!=None:
             self.method = method
         else:
-            self.method = PDESolver(self.model,101,3.0,0.5,1.0/12.0)
-            #self.method = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(self.model,101,5))
+            #self.method = PDESolver(self.model,101,3.0,0.5,1.0/12.0)
+            self.method = DensityIntegrationWithBreakEven(CubicSplineExactIntegration(self.model,101,5))
         # Done. We postpone pricing to npv calculation
 
     def swaptionsNPV(self):
@@ -50,7 +50,7 @@ class BermudanSwaption:
         underlyings = []
         for swaption in self.europeanSwaptions:
             details = swaption.bondOptionDetails()
-            underlying = CouponBond(self.model,details['expiryTime'],details['payTimes'],details['cashFlows'])
+            underlying = CouponBond(self.model,details['expiryTime'],details['payTimes'],details['cashFlows']*details['callOrPut'])
             underlyings.append(underlying)
         expiryTimes = np.array([ underlying.observationTime for underlying in underlyings ])
         bondOption = BermudanOption(expiryTimes,underlyings,self.method)

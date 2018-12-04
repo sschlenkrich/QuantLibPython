@@ -25,8 +25,14 @@ def BachelierRaw(moneyness, stdDev, callOrPut):
     h = callOrPut * moneyness / stdDev
     return stdDev * (h*norm.cdf(h) + norm.pdf(h))
 
+def BachelierVegaRaw(moneyness, stdDev):
+    return norm.pdf(moneyness / stdDev)
+
 def Bachelier(strike, forward, sigma, T, callOrPut):
     return BachelierRaw(forward-strike,sigma*np.sqrt(T),callOrPut)
+
+def BachelierVega(strike, forward, sigma, T):
+    return BachelierVegaRaw(forward-strike,sigma*np.sqrt(T))*np.sqrt(T)
 
 def BachelierImpliedVol(price, strike, forward, T, callOrPut):
     def objective(sigma):
