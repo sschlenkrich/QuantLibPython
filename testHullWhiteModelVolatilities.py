@@ -27,7 +27,7 @@ discCurve = YieldCurve(terms,rates)
 projCurve = YieldCurve(terms,rates2)
 
 # Hull-White model mean reversion
-meanReversion    = -0.05
+meanReversion    = 0.05
 
 # first we have a look at the model-implied volatility smile
 
@@ -36,7 +36,7 @@ atmRate = createSwaption('10y','10y',discCurve,projCurve).fairRate()
 relStrikes = [ -0.03+1e-3*k for k in range(61)]
 hwVols = [ 0.0050, 0.0075, 0.0100, 0.0125 ]
 for hwVol in hwVols:
-    hwModel = HullWhiteModel(discCurve,meanReversion,[30.0],[hwVol])
+    hwModel = HullWhiteModel(discCurve,meanReversion,np.array([30.0]),np.array([hwVol]))
     normalVols = [ createSwaption('10y','10y',discCurve,projCurve,atmRate+strike).npvHullWhite(hwModel,'v')*1e+4
                    for strike in relStrikes ]
     plt.plot(relStrikes, normalVols, label='a='+str(meanReversion)+', sigma_r='+str(hwVol))
@@ -55,11 +55,11 @@ vols = np.zeros([len(expiries),len(swapterms)])
 # for this test we want to keep the model fixed to a particular vol point
 # if we change mean reversion
 def objective(sigma):
-    tmpModel = HullWhiteModel(discCurve,meanReversion,[30.0],[sigma])
+    tmpModel = HullWhiteModel(discCurve,meanReversion,np.array([30.0]),np.array([sigma]))
     return createSwaption('10y','10y',discCurve,projCurve).npvHullWhite(tmpModel,'v') - 0.01  # we calibrate to 100bp 10y-10y vols
 sigma = brentq(objective, 0.5e-2, 0.5e-1, xtol=1.0e-8)
 print('sigma_r: '+str(sigma))
-hwModel = HullWhiteModel(discCurve,meanReversion,[30.0],[sigma])
+hwModel = HullWhiteModel(discCurve,meanReversion,np.array([30.0]),np.array([sigma]))
 
 for expiry in expiries:
     for swapterm in swapterms:
