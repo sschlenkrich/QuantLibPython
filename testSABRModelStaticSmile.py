@@ -8,10 +8,10 @@ import pandas
 from QuantLibWrapper import SabrModel, MCSimulation
 
 # SabrModel( S(t), T, alpha, beta, nu, rho )
-model1 = SabrModel(0.05,5.0,0.0100,0.0001,0.0001,0.0)
-model2 = SabrModel(0.05,5.0,0.0450,0.5000,0.0001,0.0)
-model3 = SabrModel(0.05,5.0,0.0405,0.5000,0.5000,0.0)
-model4 = SabrModel(0.05,5.0,0.0420,0.5000,0.5000,0.7)
+model1 = SabrModel(0.05,1.0,0.0100,0.0001,0.0001,0.0,shift=0.1)
+model2 = SabrModel(0.05,1.0,0.0450,0.5000,0.0001,0.0,shift=0.1)
+model3 = SabrModel(0.05,1.0,0.0405,0.5000,0.5000,0.0,shift=0.1)
+model4 = SabrModel(0.05,1.0,0.0420,0.5000,0.5000,0.7,shift=0.1)
 # ATM calibration
 print(model1.calibrateATM(0.01), model2.calibrateATM(0.01), model3.calibrateATM(0.01), model4.calibrateATM(0.01))
 # Strikes

@@ -7,27 +7,28 @@ from Helpers import Bachelier, BachelierImpliedVol
 class SabrModel:
 
     # Python constructor
-    def __init__(self, forward, timeToExpiry, alpha, beta, nu, rho):
+    def __init__(self, forward, timeToExpiry, alpha, beta, nu, rho, shift=0.0):
         self.forward      = forward
         self.timeToExpiry = timeToExpiry
         self.alpha        = alpha
         self.beta         = beta
         self.nu           = nu
         self.rho          = rho
+        self.shift        = shift
         
     # helpers
     def localVolC(self, rate):
-        return np.power(rate,self.beta) if rate>0.0 else 0.0
+        return np.power(rate+self.shift,self.beta) if rate>-self.shift else 0.0
         
     def localVolCPrime(self, rate):  # for Milstein method
-        return self.beta * np.power(rate,self.beta-1) if rate>0.0 else 0.0
+        return self.beta * np.power(rate+self.shift,self.beta-1) if rate>-self.shift else 0.0
         
     def sAverage(self, strike, forward):
         return (strike + forward) / 2.0
         # return np.power(strike*forward,0.5) # check consistency to QL
     
     def zeta(self, strike, forward):
-        return self.nu / self.alpha * (np.power(forward,1-self.beta)-np.power(strike,1-self.beta)) / (1-self.beta)
+        return self.nu / self.alpha * (np.power(forward+self.shift,1-self.beta)-np.power(strike+self.shift,1-self.beta)) / (1-self.beta)
         
     def chi(self, zeta):
         return np.log((np.sqrt(1-2*self.rho*zeta+zeta*zeta)-self.rho+zeta)/(1-self.rho))
@@ -36,8 +37,8 @@ class SabrModel:
     def normalVolatility(self,strike):
         Sav     = self.sAverage(strike,self.forward)
         CSav    = self.localVolC(Sav)
-        gamma1  = self.beta / Sav
-        gamma2  = self.beta * (self.beta-1) / Sav / Sav
+        gamma1  = self.beta / (Sav+self.shift)
+        gamma2  = self.beta * (self.beta-1) / (Sav+self.shift) / (Sav+self.shift)
         I1      = (2*gamma2 - gamma1*gamma1) / 24 * self.alpha * self.alpha * CSav * CSav
         I1      = I1 + self.rho * self.nu * self.alpha * gamma1 / 4 * CSav
         I1      = I1 + (2 - 3*self.rho*self.rho) / 24 * self.nu * self.nu
