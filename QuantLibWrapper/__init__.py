@@ -29,3 +29,7 @@ from Regression import Regression, MultiIndexSet
 from SplineInterpolation import SplineInterpolation
 
 from BermudanSwaption import BermudanSwaption
+
+from SwaptionVolatility import SwaptionVolatility
+
+from QuasiGaussian import ModelSmile, McSimSmile, MarketSmile, Smiles, LVSmiles
