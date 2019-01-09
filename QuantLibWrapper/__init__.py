@@ -29,3 +29,5 @@ from Regression import Regression, MultiIndexSet
 from SplineInterpolation import SplineInterpolation
 
 from BermudanSwaption import BermudanSwaption
+
+from HullWhiteModel2F import HullWhiteModel2F, TerminalSwapRateModel, Hw2fTsrModel
