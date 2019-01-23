@@ -43,23 +43,33 @@ curve = [ [ 0.00  ],
           [ 0.00  ] ]
 eta   = [   0.00   ]
 
+d = 5
+
 times = [   5.0,   10.0,   15.0,   20.0,   ]
-sigma = [ [ 0.005,  0.005,  0.005,  0.001, ],
-          [ 0.005,  0.005,  0.005,  0.001, ],
-          [ 0.005,  0.005,  0.005,  0.001, ] ]
-slope = [ [ 0.10,   0.10,   0.10,   0.10,  ],
-          [ 0.10,   0.10,   0.10,   0.10,  ], 
-          [ 0.10,   0.10,   0.10,   0.10,  ] ]
+sigma = [ [ 0.005,  0.005,  0.005,  0.005, ],
+          [ 0.005,  0.005,  0.005,  0.005, ],
+          [ 0.005,  0.005,  0.005,  0.005, ],
+          [ 0.005,  0.005,  0.005,  0.005, ],
+          [ 0.005,  0.005,  0.005,  0.005, ] ]
+slope = [ [ 0.01,   0.01,   0.01,   0.01,  ],
+          [ 0.01,   0.01,   0.01,   0.01,  ], 
+          [ 0.01,   0.01,   0.01,   0.01,  ], 
+          [ 0.01,   0.01,   0.01,   0.01,  ], 
+          [ 0.01,   0.01,   0.01,   0.01,  ] ]
 curve = [ [ 0.00,   0.00,   0.00,   0.00,  ],
           [ 0.00,   0.00,   0.00,   0.00,  ], 
+          [ 0.00,   0.00,   0.00,   0.00,  ], 
+          [ 0.00,   0.00,   0.00,   0.00,  ], 
           [ 0.00,   0.00,   0.00,   0.00,  ] ]
-eta   = [   0.30,   0.30,   0.30,   0.30,   ]
+eta   = [   0.00,   0.00,   0.00,   0.00,   ]
 
-delta = [   2.0,  7.0, 15.0  ]
-chi   = [   0.05, 0.25, 0.75 ]
-Gamma = [ [ 1.00,  0.70, 0.50 ],
-          [ 0.70,  1.00, 0.70 ],
-          [ 0.50,  0.70, 1.00 ] ]
+delta = [   0.5,  5.0, 10.0, 15.0, 20.0  ]
+chi   = [   0.01, 0.04, 0.07, 0.10, 0.13 ]
+Gamma = [ [ 1.00,  0.50, 0.25, 0.00,-0.25 ],
+          [ 0.50,  1.00, 0.50, 0.25, 0.00 ],
+          [ 0.25,  0.50, 1.00, 0.50, 0.25 ],
+          [ 0.00,  0.25, 0.50, 1.00, 0.50 ],
+          [-0.25,  0.00, 0.25, 0.50, 1.00 ] ]
 theta = 0.1
 
 qgModel = ql.QuasiGaussianModel(hYts,d,times,sigma,slope,curve,eta,delta,chi,Gamma,theta)
@@ -68,11 +78,14 @@ sw = SwaptionVolatility('swaptionATMVols2.csv',hYts,hYts)
 
 index = ql.EuriborSwapIsdaFixA( ql.Period('1y'),hYts,hYts)
 indices = [ index.clone(ql.Period('2y')), index.clone(ql.Period('10y')) ]
+#indices = [ index.clone(ql.Period('10y')) ]
 
 endCrit = ql.EndCriteria(100,10,1.0e-4,1.0e-4,1.0e-4)
 
+input("Press Enter to continue...")
+
 qgCalib = ql.QGCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle(sw.volTS),indices,
-              0.25,False,0.010,0.3,0.5,10.0,1.0,0.0,0.1,0.01,endCrit)
+              0.25,False,0.010,0.12,0.5,1.0,0.0,0.0,1.0,0.01,endCrit)
 print(qgCalib.debugLog())
 caModel = ql.QuasiGaussianModel(qgCalib.calibratedModel())
 #caModel = qgModel
