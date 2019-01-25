@@ -14,7 +14,7 @@ from QuantLibWrapper import YieldCurve, Swap, Swaption, createSwaption, \
     HullWhiteModel, HullWhiteModelFromSwaption, BermudanSwaption, PDESolver, \
     DensityIntegrationWithBreakEven, CubicSplineExactIntegration
 from QuantLibWrapper.YieldCurve import YieldCurve
-print(YieldCurve)
+
 today = ql.Date(3,9,2018)
 ql.Settings.setEvaluationDate(ql.Settings.instance(),today)
 
@@ -23,8 +23,9 @@ ql.Settings.setEvaluationDate(ql.Settings.instance(),today)
 terms = [    '1y',    '2y',    '3y',    '4y',    '5y',    '6y',    '7y',    '8y',    '9y',   '10y',   '12y',   '15y',   '20y',   '25y',   '30y' ] 
 rates = [ 2.70e-2, 2.75e-2, 2.80e-2, 3.00e-2, 3.36e-2, 3.68e-2, 3.97e-2, 4.24e-2, 4.50e-2, 4.75e-2, 4.75e-2, 4.70e-2, 4.50e-2, 4.30e-2, 4.30e-2 ] 
 
-terms = [ '30y'   ]  # flat curve
-rates = [ 5.00e-2 ] 
+if False:
+    terms = [ '30y'   ]  # flat curve
+    rates = [ 5.00e-2 ] 
 
 rates2 = [ r+0.005 for r in rates ]
 
@@ -60,6 +61,7 @@ for h in [ 10.0**(-k) for k in range(3, 18) ]:
     i0 = BermudanSwaption([s0],a,model=h0,method=DensityIntegrationWithBreakEven(CubicSplineExactIntegration(h0,101,5)))
     ip = BermudanSwaption([sp],a,model=hp,method=DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hp,101,5)))
     im = BermudanSwaption([sm],a,model=hm,method=DensityIntegrationWithBreakEven(CubicSplineExactIntegration(hm,101,5)))
+    
     res.append([ h, s0.vega(),
         s0.npv(),            sp.npv(),            sm.npv(),
         s0.npvHullWhite(h0), sp.npvHullWhite(hp), sm.npvHullWhite(hm),

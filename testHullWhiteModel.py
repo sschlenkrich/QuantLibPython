@@ -1,5 +1,9 @@
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
+
+if locals().get('__file__'):
+    sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
+else:
+    sys.path.append(os.path.join(os.getcwd(),'QuantLibWrapper'))
 
 import numpy as np
 import matplotlib.pyplot as plt
