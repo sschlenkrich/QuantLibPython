@@ -13248,20 +13248,8 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">compute_integration2</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="n">n_grid_points</span><span class="o">=</span><span class="mi">101</span><span class="p">,</span><span class="n">lambda_std_devs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">hs</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">18</span><span class="p">)],</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">compute_integration2</span><span class="p">(</span><span class="n">method</span><span class="p">,</span><span class="n">n_grid_points</span><span class="o">=</span><span class="mi">101</span><span class="p">,</span><span class="n">lambda_std_devs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">hs</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">18</span><span class="p">)],</span>
                          <span class="n">break_even</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">degree</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="n">timeStepSize</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">12.0</span><span class="p">,</span> <span class="n">lambda0N</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="n">SimpsonIntegration</span>
-        <span class="n">n_grid_points</span><span class="o">=</span><span class="mi">101</span>
-        <span class="n">lambda_std_devs</span><span class="o">=</span><span class="mi">5</span>
-        <span class="n">hs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">18</span><span class="p">)]</span>
-        <span class="n">break_even</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span><span class="kc">True</span><span class="p">]</span>
-        <span class="n">degree</span><span class="o">=</span><span class="mi">2</span>
-        <span class="n">theta</span><span class="o">=</span><span class="mf">0.5</span>
-        <span class="n">timeStepSize</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="mf">12.0</span>
-        <span class="n">lambda0N</span><span class="o">=</span><span class="kc">None</span>
-
     <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">assert</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="n">SimpsonIntegration</span><span class="p">,</span><span class="n">CubicSplineExactIntegration</span><span class="p">,</span><span class="n">HermiteIntegration</span><span class="p">,</span><span class="n">PDESolver</span><span class="p">],</span> <span class="s1">&#39;the method is not allowed&#39;</span>
     <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hs</span><span class="p">:</span>
@@ -13329,14 +13317,14 @@ div#notebook {
 <span class="sd">    </span>
 <span class="sd">    Keyword arguments (If not explicitly written parameters have to be numerics or list of numerics): </span>
 <span class="sd">    n_grid_points (int) -- number of grid points, default 101</span>
-<span class="sd">    lambda_std_devs -- grid size (lambda*std), default 5</span>
-<span class="sd">    hs -- shift size, default [10.0**(-k) for k in range(3,18)]</span>
-<span class="sd">    break_even (bool) -- density integration with break even, default False</span>
-<span class="sd">    degree (int) -- Hermite polynomial degrees, default 3</span>
-<span class="sd">    theta -- time integration parameter, default 0.5</span>
-<span class="sd">    timeStepSize -- time step size, default 1/12</span>
-<span class="sd">    lambda0N -- choice of boundary condition, default None</span>
-<span class="sd">    methods -- method selection for evaluation, only SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver can be selected, default [SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver]</span>
+<span class="sd">    lambda_std_devs     -- grid size (lambda*std), default 5</span>
+<span class="sd">    hs                  -- shift size, default [10.0**(-k) for k in range(3,18)]</span>
+<span class="sd">    break_even (bool)   -- density integration with break even, default False</span>
+<span class="sd">    degree (int)        -- Hermite polynomial degrees, default 3</span>
+<span class="sd">    theta               -- time integration parameter, default 0.5</span>
+<span class="sd">    timeStepSize        -- time step size, default 1/12</span>
+<span class="sd">    lambda0N            -- choice of boundary condition, default None</span>
+<span class="sd">    methods             -- method selection for evaluation, only SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver can be selected, default [SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">table</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">timetable</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13441,14 +13429,14 @@ div#notebook {
     
     Keyword arguments (If not explicitly written parameters have to be numerics or list of numerics): 
     n_grid_points (int) -- number of grid points, default 101
-    lambda_std_devs -- grid size (lambda*std), default 5
-    hs -- shift size, default [10.0**(-k) for k in range(3,18)]
-    break_even (bool) -- density integration with break even, default False
-    degree (int) -- Hermite polynomial degrees, default 3
-    theta -- time integration parameter, default 0.5
-    timeStepSize -- time step size, default 1/12
-    lambda0N -- choice of boundary condition, default None
-    methods -- method selection for evaluation, only SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver can be selected, default [SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver]
+    lambda_std_devs     -- grid size (lambda*std), default 5
+    hs                  -- shift size, default [10.0**(-k) for k in range(3,18)]
+    break_even (bool)   -- density integration with break even, default False
+    degree (int)        -- Hermite polynomial degrees, default 3
+    theta               -- time integration parameter, default 0.5
+    timeStepSize        -- time step size, default 1/12
+    lambda0N            -- choice of boundary condition, default None
+    methods             -- method selection for evaluation, only SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver can be selected, default [SimpsonIntegration,CubicSplineExactIntegration,HermiteIntegration,PDESolver]
     
 </pre>
 </div>
@@ -13463,54 +13451,22 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">plotRelativeError</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-    <span class="c1"># upward derivative</span>
-    <span class="n">vega</span> <span class="o">=</span> <span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;0&#39;</span><span class="p">])</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0e-4</span>
-    <span class="n">relError</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vega</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;Vega&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span><span class="n">relError</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Upward&#39;</span><span class="p">)</span>
-    <span class="c1"># downward derivative</span>
-    <span class="n">vega</span> <span class="o">=</span> <span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;0&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;m&#39;</span><span class="p">])</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span><span class="o">*</span><span class="mf">1.0e-4</span>
-    <span class="n">relError</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vega</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;Vega&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span><span class="n">relError</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Downward&#39;</span><span class="p">)</span>
-    <span class="c1"># two-sided derivative</span>
-    <span class="n">vega</span> <span class="o">=</span> <span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">table</span><span class="p">[</span><span class="nb">id</span><span class="o">+</span><span class="s1">&#39;m&#39;</span><span class="p">])</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">2.0</span><span class="o">*</span><span class="mf">1.0e-4</span>
-    <span class="n">relError</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">vega</span><span class="o">/</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;Vega&#39;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">table</span><span class="p">[</span><span class="s1">&#39;h&#39;</span><span class="p">],</span><span class="n">relError</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Two-sided&#39;</span><span class="p">)</span>
-    <span class="c1"># plot properties</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;shift size h&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;|RelError|&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">1.0e-11</span><span class="p">,</span><span class="mf">10.0</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">plotRelativeError2</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="n">leg1</span><span class="p">,</span><span class="n">leg2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">integration_method</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Two-sided&#39;</span><span class="p">,</span><span class="s1">&#39;Upward&#39;</span><span class="p">,</span><span class="s1">&#39;Downward&#39;</span><span class="p">],</span>
                        <span class="n">title</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">x_axis</span><span class="o">=</span><span class="s1">&#39;h&#39;</span><span class="p">,</span><span class="n">x_axis_label</span><span class="o">=</span><span class="s1">&#39;shift size h&#39;</span><span class="p">,</span><span class="n">x_log_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">sensitivity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plotting the relative error of the Bermudan price evaluation (or sensitivity) with one or 2 legends</span>
 <span class="sd">    </span>
 <span class="sd">    Keyword arguments:</span>
-<span class="sd">    table (pandas.DataFrage) -- as returned by compute_integration2_multiple</span>
-<span class="sd">    leg1 (str) -- first legend variable, needs to be a column name of table</span>
-<span class="sd">    leg2 (str) -- second legend variable, needs to be a column name of table, default None (means integration_method)</span>
-<span class="sd">    integration_method -- integration technicque used, subset of [&#39;Two-sided&#39;,&#39;Upward&#39;,&#39;Downward&#39;] possible, default if leg2 is None [&#39;Two-sided&#39;,&#39;Upward&#39;,&#39;Downward&#39;], else integration_method[0]</span>
-<span class="sd">    title (str) -- plot title, default &#39;&#39;</span>
+<span class="sd">    table (pandas.DataFrage)  -- as returned by compute_integration2_multiple</span>
+<span class="sd">    leg1 (str)                -- first legend variable, needs to be a column name of table</span>
+<span class="sd">    leg2 (str)                -- second legend variable, needs to be a column name of table, default None (means integration_method)</span>
+<span class="sd">    integration_method        -- integration technicque used, subset of [&#39;Two-sided&#39;,&#39;Upward&#39;,&#39;Downward&#39;] possible, default if leg2 is None [&#39;Two-sided&#39;,&#39;Upward&#39;,&#39;Downward&#39;], else integration_method[0]</span>
+<span class="sd">    title (str)               -- plot title, default &#39;&#39;</span>
 <span class="sd">    ylim (list of 2 numerics) -- limit of y-axis, default None</span>
-<span class="sd">    x_axis (str) -- x-axis variable, needs to be column of table, default &#39;h&#39;</span>
-<span class="sd">    x_axis_label (str) -- x-axis label, default &#39;shift size h&#39;</span>
-<span class="sd">    x_log_scale (bool) -- log scale for x-axis, default True</span>
-<span class="sd">    sensitivity (bool) -- printing price sensitivities instead of price accuracy, default False</span>
+<span class="sd">    x_axis (str)              -- x-axis variable, needs to be column of table, default &#39;h&#39;</span>
+<span class="sd">    x_axis_label (str)        -- x-axis label, default &#39;shift size h&#39;</span>
+<span class="sd">    x_log_scale (bool)        -- log scale for x-axis, default True</span>
+<span class="sd">    sensitivity (bool)        -- printing price sensitivities instead of price accuracy, default False</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="nb">tuple</span><span class="p">):</span> <span class="n">table</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
@@ -13584,7 +13540,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">range_rel_error</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;I&#39;</span><span class="p">):</span>
