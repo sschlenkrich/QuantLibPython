@@ -15,23 +15,23 @@ hYts = ql.YieldTermStructureHandle(
 
 d     = 3
 
-times = [   5.0,   10.0,   15.0,   20.0,   ]
-sigma = [ [ 0.005,  0.005,  0.005,  0.001, ],
-          [ 0.005,  0.005,  0.005,  0.001, ],
-          [ 0.005,  0.005,  0.005,  0.001, ] ]
-slope = [ [ 0.10,   0.10,   0.10,   0.10,  ],
-          [ 0.10,   0.10,   0.10,   0.10,  ], 
-          [ 0.10,   0.10,   0.10,   0.10,  ] ]
-curve = [ [ 0.00,   0.00,   0.00,   0.00,  ],
-          [ 0.00,   0.00,   0.00,   0.00,  ], 
-          [ 0.00,   0.00,   0.00,   0.00,  ] ]
-eta   = [   0.30,   0.30,   0.30,   0.30,   ]
+times = [ 5.0+5*k for k in range(4) ]
+sigma = [ [ 0.005 for t in times ],
+          [ 0.005 for t in times ],
+          [ 0.005 for t in times ] ]
+slope = [ [ 0.08  for t in times  ],
+          [ 0.08  for t in times  ], 
+          [ 0.08  for t in times  ] ]
+curve = [ [ 0.00  for t in times  ],
+          [ 0.00  for t in times  ], 
+          [ 0.00  for t in times  ] ]
+eta   = [   0.30  for t in times    ]
 
 delta = [   2.0,  7.0, 15.0  ]
-chi   = [   0.01, 0.07, 0.15 ]
-Gamma = [ [ 1.00,  0.70, 0.50 ],
-          [ 0.70,  1.00, 0.70 ],
-          [ 0.50,  0.70, 1.00 ] ]
+chi   = [   0.05, 0.25, 0.75 ]
+Gamma = [ [ 1.00,  0.50, 0.00 ],
+          [ 0.50,  1.00, 0.50 ],
+          [ 0.00,  0.50, 1.00 ] ]
 theta = 0.1
 
 qgModel = ql.QuasiGaussianModel(hYts,d,times,sigma,slope,curve,eta,delta,chi,Gamma,theta)
@@ -91,9 +91,11 @@ atmVTS = ql.SwaptionVolatilityMatrix(ql.TARGET(),ql.Following,expiTerms,swapTerm
 indices = [ ql.EuriborSwapIsdaFixA(ql.Period( '2y'),hYts,hYts),
             ql.EuriborSwapIsdaFixA(ql.Period('10y'),hYts,hYts) ]
 
+indices = [ ql.EuriborSwapIsdaFixA(ql.Period('5y'),hYts,hYts) ]
+
 modelTimesStepSize = 0.25   # time grid size in swap rate models
-useExpectedXY      = True  # passed on to swap rate model
-endCrit = ql.EndCriteria(100,10,1.0e-4,1.0e-4,1.0e-4)  # for optimizer
+useExpectedXY      = False  # passed on to swap rate model
+endCrit = ql.EndCriteria(1000,10,1.0e-6,1.0e-6,1.0e-6)  # for optimizer
 
 sigmaMax     = 0.01  # maximum sigma parameter in optimisation
 slopeMax     = 0.3   # maximum slope parameter in optimisation
@@ -103,11 +105,24 @@ slopeWeight  = 0.0   # put emphasis on skew fit
 etaWeight    = 0.0   # put emphasis on smile fit
 penaltySigma = 0.1   # force similar sigma parameters per factor
 penaltySlope = 0.01  # force similar slope parameters per factor
+# only for MC calibration
+monteCarloStepSize = 0.5
+monteCarloPaths    = 1000
+curveMax           = 0.5
+curveWeight        = 0.0
+penaltyCurve       = 0.01
 
-qgCalib = ql.QGCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle(atmVTS),
-              indices,modelTimesStepSize,useExpectedXY,sigmaMax,slopeMax,etaMax,
-              sigmaWeight,slopeWeight,etaWeight,penaltySigma,penaltySlope,
+#qgCalib = ql.QGCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle(atmVTS),
+#              indices,modelTimesStepSize,useExpectedXY,sigmaMax,slopeMax,etaMax,
+#              sigmaWeight,slopeWeight,etaWeight,penaltySigma,penaltySlope,
+#              endCrit)
+#simul = None
+
+qgCalib = ql.QGMonteCarloCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle(atmVTS),indices,
+              monteCarloStepSize,monteCarloPaths,sigmaMax,slopeMax,curveMax,
+              sigmaWeight,slopeWeight,curveWeight,penaltySigma,penaltySlope,penaltyCurve,
               endCrit)
+simul = qgCalib.mcSimulation()
 
 print(qgCalib.debugLog())
 caModel = ql.QuasiGaussianModel(qgCalib.calibratedModel())
@@ -121,4 +136,14 @@ print(np.array(caModel.eta()))
 
 expiries = [ '5y', '10y', '15y', '20y' ]
 swpterms = [ '2y', '5y', '10y']
-Smiles(atmVTS,caModel,None,expiries,swpterms,hYts,hYts)
+Smiles(atmVTS,caModel,simul,expiries,swpterms,hYts,hYts)
+
+times = np.array(caModel.times())
+sigma = np.array(caModel.sigma())
+plt.figure()
+for k in range(sigma.shape[0]):
+    plt.step(times,sigma[k]*1e4, label='k='+str(k))
+plt.xlabel('time t')
+plt.ylabel('sigma(t) (bp)')
+plt.legend()
+plt.show()

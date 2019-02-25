@@ -18,7 +18,7 @@ def ModelSmile(model, expiryStr, swaptermStr, projYtsH, discYtsH):
     cf = ql.SwapCashFlows(index.underlyingSwap(date),discYtsH)
     saModel = ql.QGAverageSwaprateModel( ql.QGSwaprateModel(model,
               cf.floatTimes(),cf.floatWeights(),cf.fixedTimes(),cf.annuityWeights(),
-              np.linspace(0.0,ql.Actual365Fixed().yearFraction(today,date),int(time/0.25)+1).tolist(),True))
+              np.linspace(0.0,ql.Actual365Fixed().yearFraction(today,date),int(time/0.25)+1).tolist(),False))
     relStrikes = [ -0.02, -0.01, 0.00, 0.01, 0.02 ]
     vols = []
     for strike in relStrikes:
