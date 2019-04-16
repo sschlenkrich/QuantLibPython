@@ -21,6 +21,16 @@ class One:
     def at(self,x):
         return 1.0
 
+class Max:
+    # Python constructor
+    def __init__(self, first, second):
+        self.first  = first
+        self.second = second
+
+    def at(self,x):
+        return max(self.first.at(x),self.second.at(x),)
+    
+
 class VanillaOption:
     # Python constructor
     def __init__(self, underlying, strike, callOrPut):

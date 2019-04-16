@@ -86,7 +86,7 @@ class HullWhiteModel:
             for i in range(len(payTimes)):
                 bond += cashFlows[i] * self.zeroBond(expiryTime,x,payTimes[i])
             return bond - strikePrice
-        xStar = brentq(objective,-0.3, 0.3, xtol=1.0e-8)   # +/-30% might be too narrow in some situations
+        xStar = brentq(objective,-1.0, 1.0, xtol=1.0e-8)   # +/-30% might be too narrow in some situations
         bondOption = 0.0
         for i in range(len(payTimes)):
             strike = self.zeroBond(expiryTime,xStar,payTimes[i])

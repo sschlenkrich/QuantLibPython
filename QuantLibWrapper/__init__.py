@@ -14,11 +14,11 @@ from MCSimulation import MCSimulation
 
 from Payoffs import Pay, VanillaOption, CouponBond
 
-from BermudanOption import BermudanOption
+from BermudanOption import BermudanOption, EuropeanPayoff
 
 from DensityIntegrations import  DensityIntegrationWithBreakEven, SimpsonIntegration, HermiteIntegration, CubicSplineExactIntegration
 
-from Swaption import Swaption, createSwaption, HullWhiteModelFromSwaption
+from Swaption import Swaption, createSwaption, HullWhiteModelFromSwaption, CashSettledSwaptionPayoff, CashPhysicalSwitchPayoff
 
 from PDESolver import PDESolver
 

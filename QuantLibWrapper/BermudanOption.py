@@ -32,3 +32,16 @@ class BermudanOption:
         return np.interp(0.0, self.x, self.H)
 
 
+# We specify a European payoff (pricer) without [.]^+ operator
+class EuropeanPayoff(BermudanOption):
+
+    # Python constructor
+    def __init__(self, expiryTime, underlying, method):
+        x = method.xSet(expiryTime)
+        if len(x.shape)==1:  # PDE and density integration
+            U = np.array([ underlying.at([state,0.0]) for state in x ])
+        else:   # MC simulation
+            U = np.array([ underlying.at(state) for state in x ])
+        [x, H] = method.rollBack(0.0,expiryTime,x,U,U)
+        self.x = x
+        self.H = H

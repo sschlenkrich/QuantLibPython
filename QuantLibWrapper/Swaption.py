@@ -78,6 +78,28 @@ class Swaption:
         details['cashFlows'] = np.array(caschflows)
         return details
 
+    def swaptionDetails(self):
+        # calculate times and cash flows as input to (cash-settled) swaption valuation
+        details = {}
+        details['callOrPut']  = 1.0 if self.underlyingSwap.payerOrReceiver==ql.VanillaSwap.Receiver else -1.0
+        details['strikeRate'] = self.underlyingSwap.fixedRate
+        details['notional']   = self.underlyingSwap.notional
+        refDate  = self.underlyingSwap.discHandle.referenceDate()
+        details['expiryTime'] = ql.Actual365Fixed().yearFraction(refDate,self.exercise.dates()[0])
+        annuityLeg = [ [ ql.Actual365Fixed().yearFraction(refDate,cf.date()), ql.as_coupon(cf).accrualPeriod() ]
+                       for cf in self.underlyingSwap.swap.fixedLeg() ]
+        details['annuityLeg'] = np.array(annuityLeg)
+        floatLeg = [ [ ql.Actual365Fixed().yearFraction(refDate,ql.as_coupon(cf).accrualStartDate()),
+                       ((1 + ql.as_coupon(cf).accrualPeriod()*ql.as_coupon(cf).rate()) *
+                        self.underlyingSwap.discHandle.discount(ql.as_coupon(cf).accrualEndDate()) /
+                        self.underlyingSwap.discHandle.discount(ql.as_coupon(cf).accrualStartDate()) - 1.0) ]
+                     for cf in self.underlyingSwap.swap.floatingLeg() ]
+        floatLeg = floatLeg + [[ floatLeg[0][0], 1.0 ]] + \
+                   [[ ql.Actual365Fixed().yearFraction(refDate,ql.as_coupon(
+                     self.underlyingSwap.swap.floatingLeg()[-1]).accrualEndDate()), -1.0 ]]
+        details['floatLeg'] = np.array(floatLeg)
+        return details
+
     def npvHullWhite(self, hwModel, outFlag='p'):   # outFlag = [p]rice, [v]olatility or both [pv]
         details = self.bondOptionDetails()
         npv = hwModel.couponBondOption(details['expiryTime'], details['payTimes'], 
@@ -98,7 +120,7 @@ class Swaption:
 def createSwaption(expiryTerm, swapTerm, discCurve, projCurve, strike='ATM', payerOrReceiver=ql.VanillaSwap.Payer, normalVolatility=0.01):
     today      = discCurve.yts.referenceDate()
     startDate  = ql.TARGET().advance(today,ql.Period(expiryTerm),ql.ModifiedFollowing)
-    endDate    = ql.TARGET().advance(startDate,ql.Period(swapTerm),ql.ModifiedFollowing)
+    endDate    = ql.TARGET().advance(startDate,ql.Period(swapTerm),ql.Unadjusted)
     expiryDate = ql.TARGET().advance(startDate,ql.Period('-2d'),ql.Preceding)
     if str(strike).upper()=='ATM':
         swap = Swap(startDate,endDate,0.0,discCurve,projCurve)
@@ -115,6 +137,65 @@ def HullWhiteModelFromSwaption(swaption, meanReversion=0.01):
         volatilityValues[0] = sigma
         model = HullWhiteModel(swaption.underlyingSwap.discYieldCurve,meanReversion,volatilityTimes,volatilityValues)
         return swaption.npvHullWhite(model,'p') - swaption.npv()
-    sigma = brentq(objective,0.1*volatilityValues[0],5.0*volatilityValues[0],xtol=1.0e-8)
+    sigma = brentq(objective,0.01*volatilityValues[0],10.0*volatilityValues[0],xtol=1.0e-8)
     volatilityValues[0] = sigma
     return HullWhiteModel(swaption.underlyingSwap.discYieldCurve,meanReversion,volatilityTimes,volatilityValues)
+
+class CashSettledSwaptionPayoff:
+    # A Swaption is a priori assumed physically settled. However, we also want
+    # to price cash-settled swaptions via Hull White and numerical methods
+    
+    # Python constructor
+    def __init__(self, swaption, hwModel):
+        self.swaption = swaption
+        self.model = hwModel
+        # we pre-calculate some quantities
+        self.details = swaption.swaptionDetails()
+        # we calculate a uniform year fraction for compounding
+        # this is what we find in most papers
+        # this should work for annual to quarterly compounding
+        self.tau = round(4.0*self.details['annuityLeg'][-1][1])/4.0
+        print(self.tau)
+
+    def at(self, x):
+        annuity = 0.0
+        for cf in self.details['annuityLeg']:
+            annuity += cf[1] * self.model.zeroBondPayoff(x,self.details['expiryTime'],cf[0]) 
+        floatLeg = 0.0        
+        for cf in self.details['floatLeg']: # unfortunately, this only contains spread coupons
+            floatLeg += cf[1] * self.model.zeroBondPayoff(x,self.details['expiryTime'],cf[0])
+        swapRate = floatLeg / annuity
+        cashAnnuity = 0.0  #
+        for k in range(self.details['annuityLeg'].shape[0]):
+            cashAnnuity += self.tau / np.power(1.0 + self.tau*swapRate, k+1)
+        return self.details['notional'] * cashAnnuity * self.details['callOrPut'] * \
+               (swapRate - self.details['strikeRate'])
+
+
+class CashPhysicalSwitchPayoff:    
+    # Python constructor
+    def __init__(self, swaption, hwModel):
+        self.swaption = swaption
+        self.model = hwModel
+        # we pre-calculate some quantities
+        self.details = swaption.swaptionDetails()
+        # we calculate a uniform year fraction for compounding
+        # this is what we find in most papers
+        # this should work for annual to quarterly compounding
+        self.tau = round(4.0*self.details['annuityLeg'][-1][1])/4.0
+
+    def at(self, x):
+        annuity = 0.0
+        for cf in self.details['annuityLeg']:
+            annuity += cf[1] * self.model.zeroBondPayoff(x,self.details['expiryTime'],cf[0]) 
+        floatLeg = 0.0        
+        for cf in self.details['floatLeg']: # unfortunately, this only contains spread coupons
+            floatLeg += cf[1] * self.model.zeroBondPayoff(x,self.details['expiryTime'],cf[0])
+        swapRate = floatLeg / annuity
+        cashAnnuity = 0.0  #
+        for k in range(self.details['annuityLeg'].shape[0]):
+            cashAnnuity += self.tau / np.power(1.0 + self.tau*swapRate, k+1)
+        return self.details['notional'] * (annuity-cashAnnuity) * \
+               np.abs(swapRate - self.details['strikeRate'])
+
+    
