@@ -119,9 +119,9 @@ class Swaption:
 
 def createSwaption(expiryTerm, swapTerm, discCurve, projCurve, strike='ATM', payerOrReceiver=ql.VanillaSwap.Payer, normalVolatility=0.01):
     today      = discCurve.yts.referenceDate()
-    startDate  = ql.TARGET().advance(today,ql.Period(expiryTerm),ql.ModifiedFollowing)
+    expiryDate = ql.TARGET().advance(today,ql.Period(expiryTerm),ql.ModifiedFollowing)
+    startDate  = ql.TARGET().advance(expiryDate,ql.Period('2d'),ql.Following)
     endDate    = ql.TARGET().advance(startDate,ql.Period(swapTerm),ql.Unadjusted)
-    expiryDate = ql.TARGET().advance(startDate,ql.Period('-2d'),ql.Preceding)
     if str(strike).upper()=='ATM':
         swap = Swap(startDate,endDate,0.0,discCurve,projCurve)
         strike = swap.fairRate()
