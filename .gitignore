@@ -4,4 +4,5 @@ QuantLibWrapper/__pycache__/
 *.csv
 *.xls
 *.xlsx
-
+*.pyc
+QuantLibWrapper/*.pyc
