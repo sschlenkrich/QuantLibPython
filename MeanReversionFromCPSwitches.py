@@ -265,148 +265,142 @@ def meanReversion(swapTime1, swapTime2):
 
 
 
-#swapPairs = [ [5,10], [10,15], [15,20], [20,25], [25,30] ]
-#swapPairs = [ [5,15], [10,20], [15,25], [20,30] ]
-
-#plt.figure(figsize=(8, 4))
-#table  = [ [2.0,3.0,4.0,5.0,7.0,10.0,15.0,20.0,25.0,30.0] ]
-#labels = [ 'ExpiryTimes' ]
-#for item in swapPairs:
-#    expiryTimes, meanReversions, meanReversionsSimple = meanReversion(item[0],item[1])
-#    plt.figure(figsize=(8, 4))
-#    plt.plot(expiryTimes,meanReversionsSimple,'b--*',label=str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y')
-#    plt.plot(expiryTimes,meanReversions,'b-*',label=str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y')
-#    plt.xlim(0.0,32.0)
-#    plt.ylim(-10.0,5.0)
-#    plt.xlabel('time to expiry (y)')
-#    plt.ylabel('implied mean reversion (%)')
-#    #plt.legend()
-#    plt.title(str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y' + ' swap term')
-#    plt.tight_layout()
-#    # save for later use
-#    table  = table  + [ meanReversions, meanReversionsSimple ]
-#    labels = labels + [ str(item[0])+'Y vs. '+str(item[1])+'Y',
-#                        str(item[0])+'Y vs. '+str(item[1])+'Y (simple)', ]
-#frame = pandas.DataFrame(table).T
-#frame.columns = labels
-#frame.to_csv('MeanReversionFromVolRatios.csv', index=False)
-#plt.show()
-
+swapPairs = [ [5,10], [10,15], [15,20], [20,25], [25,30] ]
+swapPairs = [ [5,15], [10,20], [15,25], [20,30] ]
+plt.figure(figsize=(8, 4))
+table  = [ [2.0,3.0,4.0,5.0,7.0,10.0,15.0,20.0,25.0,30.0] ]
+labels = [ 'ExpiryTimes' ]
+for item in swapPairs:
+    expiryTimes, meanReversions, meanReversionsSimple = meanReversion(item[0],item[1])
+    plt.figure(figsize=(8, 4))
+    plt.plot(expiryTimes,meanReversionsSimple,'b--*',label=str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y')
+    plt.plot(expiryTimes,meanReversions,'b-*',label=str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y')
+    plt.xlim(0.0,32.0)
+    plt.ylim(-10.0,5.0)
+    plt.xlabel('time to expiry (y)')
+    plt.ylabel('implied mean reversion (%)')
+    #plt.legend()
+    plt.title(str(item[0])+'Y' + ' vs. ' + str(item[1])+'Y' + ' swap term')
+    plt.tight_layout()
+    # save for later use
+    table  = table  + [ meanReversions, meanReversionsSimple ]
+    labels = labels + [ str(item[0])+'Y vs. '+str(item[1])+'Y',
+                        str(item[0])+'Y vs. '+str(item[1])+'Y (simple)', ]
+frame = pandas.DataFrame(table).T
+frame.columns = labels
+frame.to_csv('MeanReversionFromVolRatios.csv', index=False)
+plt.show()
 #exit()
 
-#vols = [ ]
-#for j in range(len(swapTerms)):
-#    volsPerTerm = []
-#    for i in range(len(expiryTerms)):
-#        helper = PremiumHelper(expiryTerms[i], swapTerms[j],
-#                     physicalySettledPremium[i][j], cashSettledPremium[i][j])
-#        volsPerTerm.append(helper.normalVolatility)
-#    vols.append(volsPerTerm)
-#expiryTimes = [ (float(term[:-1]) if term[-1]=='Y' else float(term[:-1])/12.0) for term in expiryTerms ]
-#swapTimes   = [ int(term[:-1]) for term in swapTerms   ]
-#table = [ expiryTimes ] + vols
-#labels = [ 'ExpiryTimes' ] + swapTerms
-#frame = pandas.DataFrame(table).T
-#frame.columns = labels
-#frame.to_csv('ImpledATMVolatilities.csv', index=False)
-#fig = plt.figure()
-#ax = fig.gca(projection='3d')
-#X, Y = np.meshgrid(expiryTimes,swapTimes,indexing='ij')
-#surf = ax.plot_surface(X, Y, 1e4*np.transpose(np.array(vols)), cmap=cm.coolwarm, linewidth=0, antialiased=False)
-#ax.set_xlim(0, 30)
-#ax.set_ylim(0, 30)
-##ax.set_zlim(50, 150)
-#ax.set_xticks([0, 5, 10, 15, 20, 25, 30])
-#ax.set_yticks([0, 5, 10, 15, 20, 25, 30])
-#ax.set_xlabel('Expiries (y)')
-#ax.set_ylabel('Swap terms (y)')
-#ax.set_zlabel('Market-implied normal volatility (bp)')
-#plt.show()
-
+vols = [ ]
+for j in range(len(swapTerms)):
+    volsPerTerm = []
+    for i in range(len(expiryTerms)):
+        helper = PremiumHelper(expiryTerms[i], swapTerms[j],
+                     physicalySettledPremium[i][j], cashSettledPremium[i][j])
+        volsPerTerm.append(helper.normalVolatility)
+    vols.append(volsPerTerm)
+expiryTimes = [ (float(term[:-1]) if term[-1]=='Y' else float(term[:-1])/12.0) for term in expiryTerms ]
+swapTimes   = [ int(term[:-1]) for term in swapTerms   ]
+table = [ expiryTimes ] + vols
+labels = [ 'ExpiryTimes' ] + swapTerms
+frame = pandas.DataFrame(table).T
+frame.columns = labels
+frame.to_csv('ImpledATMVolatilities.csv', index=False)
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+X, Y = np.meshgrid(expiryTimes,swapTimes,indexing='ij')
+surf = ax.plot_surface(X, Y, 1e4*np.transpose(np.array(vols)), cmap=cm.coolwarm, linewidth=0, antialiased=False)
+ax.set_xlim(0, 30)
+ax.set_ylim(0, 30)
+#ax.set_zlim(50, 150)
+ax.set_xticks([0, 5, 10, 15, 20, 25, 30])
+ax.set_yticks([0, 5, 10, 15, 20, 25, 30])
+ax.set_xlabel('Expiries (y)')
+ax.set_ylabel('Swap terms (y)')
+ax.set_zlabel('Market-implied normal volatility (bp)')
+plt.show()
 #exit()
-
 
 # we analyse switch prices for a few examples
-
-#swapPairs = [ ['10Y', '10Y', 'r'], ['20Y', '20Y', 'b'] ]
-#plt.figure(figsize=(6, 4))
-#for item in swapPairs:
-#    helper = PremiumHelper(item[0], item[1],
-#                physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])],
-#                cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])])
-#    meanReversions = np.linspace(-0.05, 0.10, 20)
-#    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
-#    marketpriceSw  = np.array([helper.physicalStraddle - helper.cashStraddle for mr in meanReversions ])
-#    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'-',label=item[0] + '-' + item[1])
-#    plt.plot(meanReversions*100,marketpriceSw,  item[2]+'--')
-#    plt.xlim(-6.0,11.0)
-#    #plt.ylim(-10.0,5.0)
-#    plt.xlabel('mean reversion (%)')
-#    plt.ylabel('cash-physical-switch price')
-#    plt.legend()
-#    #plt.title(item[0] + '-' + item[1] + ' swaption')
-#    plt.tight_layout()
-#plt.show()
+swapPairs = [ ['10Y', '10Y', 'r'], ['20Y', '20Y', 'b'] ]
+plt.figure(figsize=(6, 4))
+for item in swapPairs:
+    helper = PremiumHelper(item[0], item[1],
+                physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])],
+                cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])])
+    meanReversions = np.linspace(-0.05, 0.10, 20)
+    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
+    marketpriceSw  = np.array([helper.physicalStraddle - helper.cashStraddle for mr in meanReversions ])
+    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'-',label=item[0] + '-' + item[1])
+    plt.plot(meanReversions*100,marketpriceSw,  item[2]+'--')
+    plt.xlim(-6.0,11.0)
+    #plt.ylim(-10.0,5.0)
+    plt.xlabel('mean reversion (%)')
+    plt.ylabel('cash-physical-switch price')
+    plt.legend()
+    #plt.title(item[0] + '-' + item[1] + ' swaption')
+    plt.tight_layout()
+plt.show()
 
 # how does the physical price impact the switch value???
-#swapPairs = [ ['10Y', '10Y', 'r'], ['20Y', '20Y', 'b'] ]
-#discount  = 0.8
-#plt.figure(figsize=(6, 4))
-#for item in swapPairs:
-#    meanReversions = np.linspace(-0.05, 0.10, 20)
-#    physPrem = physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])]
-#    cashPrem = cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])]
-#    switch   = physPrem - cashPrem
-#    helper = PremiumHelper(item[0], item[1], physPrem, cashPrem)
-#    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
-#    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'-',label=item[0] + '-' + item[1])
-#    # now with discount
-#    helper = PremiumHelper(item[0], item[1], discount*physPrem, discount*physPrem-switch)
-#    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
-#    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'--')
-#    plt.xlim(-6.0,11.0)
-#    #plt.ylim(-10.0,5.0)
-#    plt.xlabel('mean reversion (%)')
-#    plt.ylabel('cash-physical-switch price')
-#    plt.legend()
-#    #plt.title(item[0] + '-' + item[1] + ' swaption')
-#    plt.tight_layout()
-#plt.show()
-
+swapPairs = [ ['10Y', '10Y', 'r'], ['20Y', '20Y', 'b'] ]
+discount  = 0.8
+plt.figure(figsize=(6, 4))
+for item in swapPairs:
+    meanReversions = np.linspace(-0.05, 0.10, 20)
+    physPrem = physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])]
+    cashPrem = cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])]
+    switch   = physPrem - cashPrem
+    helper = PremiumHelper(item[0], item[1], physPrem, cashPrem)
+    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
+    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'-',label=item[0] + '-' + item[1])
+    # now with discount
+    helper = PremiumHelper(item[0], item[1], discount*physPrem, discount*physPrem-switch)
+    cashPhysicalSw = np.array([helper.cashPhysicalSwitchModel(helper.HullWhiteModel(mr)) for mr in meanReversions ])
+    plt.plot(meanReversions*100,cashPhysicalSw, item[2]+'--')
+    plt.xlim(-6.0,11.0)
+    #plt.ylim(-10.0,5.0)
+    plt.xlabel('mean reversion (%)')
+    plt.ylabel('cash-physical-switch price')
+    plt.legend()
+    #plt.title(item[0] + '-' + item[1] + ' swaption')
+    plt.tight_layout()
+plt.show()
 #exit()
 
 # also we want to get an idea of how the payoff looks like depending on mean reversion
-#meanReversions = [ -0.05, 0.025, 0.10 ]
-#colors         = [   'r',   'r',  'r' ]
-#item = ['20Y', '20Y']
-#timeToExpiry = 20.0   # set this consistent to item
-#for meanReversion, color in zip(meanReversions,colors):
-#    plt.figure(figsize=(8, 4))
-#    ax1 = plt.gca()
-#    ax2 = ax1.twinx()
-#    helper = PremiumHelper(item[0], item[1],
-#                physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])],
-#                cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])])
-#    hwModel = helper.HullWhiteModel(meanReversion)
-#    cashPhysicalSwitchPayoff = CashPhysicalSwitchPayoff(helper.payer,hwModel)
-#    states = np.linspace(-0.10,0.10,201)
-#    payoff = np.array([ cashPhysicalSwitchPayoff.at([x,0.0]) for x in states ])
-#    ax1.plot(states*100,payoff,color+'-',label='MR: '+str(meanReversion*100)+'%')
-#    # we also need to consider the change in distribution
-#    mu    = hwModel.expectationX(0.0,0.0,timeToExpiry)
-#    sigma = np.sqrt(hwModel.varianceX(0.0,timeToExpiry))
-#    pdf = np.array([ norm.pdf((x-mu)/sigma)/sigma for x in states ])
-#    ax2.plot(states*100,pdf,color+'--')
-#
-#    ax1.set_xlabel('state variable (%)')
-#    ax1.set_ylabel('cash-physical-switch payoff')
-#    ax1.set_ylim(-500,500)
-#    #ax1.legend()
-#    ax2.set_ylabel('pdf')
-#    ax2.set_ylim(0,35)
-#    plt.title('MR: '+str(meanReversion*100)+'%')
-#    plt.tight_layout()
-#plt.show()
+meanReversions = [ -0.05, 0.025, 0.10 ]
+colors         = [   'r',   'r',  'r' ]
+item = ['20Y', '20Y']
+timeToExpiry = 20.0   # set this consistent to item
+for meanReversion, color in zip(meanReversions,colors):
+    plt.figure(figsize=(8, 4))
+    ax1 = plt.gca()
+    ax2 = ax1.twinx()
+    helper = PremiumHelper(item[0], item[1],
+                physicalySettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])],
+                cashSettledPremium[expiryTerms.index(item[0])][swapTerms.index(item[1])])
+    hwModel = helper.HullWhiteModel(meanReversion)
+    cashPhysicalSwitchPayoff = CashPhysicalSwitchPayoff(helper.payer,hwModel)
+    states = np.linspace(-0.10,0.10,201)
+    payoff = np.array([ cashPhysicalSwitchPayoff.at([x,0.0]) for x in states ])
+    ax1.plot(states*100,payoff,color+'-',label='MR: '+str(meanReversion*100)+'%')
+    # we also need to consider the change in distribution
+    mu    = hwModel.expectationX(0.0,0.0,timeToExpiry)
+    sigma = np.sqrt(hwModel.varianceX(0.0,timeToExpiry))
+    pdf = np.array([ norm.pdf((x-mu)/sigma)/sigma for x in states ])
+    ax2.plot(states*100,pdf,color+'--')
+
+    ax1.set_xlabel('state variable (%)')
+    ax1.set_ylabel('cash-physical-switch payoff')
+    ax1.set_ylim(-500,500)
+    #ax1.legend()
+    ax2.set_ylabel('pdf')
+    ax2.set_ylim(0,35)
+    plt.title('MR: '+str(meanReversion*100)+'%')
+    plt.tight_layout()
+plt.show()
 
 #exit()
 
@@ -428,39 +422,39 @@ expTimes['30Y'] = [  2.0,  3.0,  4.0,  5.0,  7.0,  10.0,  15.0,  20.0,  25.0,  3
 swaps = ['10Y', '15Y', '20Y', '25Y', '30Y']
 #swaps = ['10Y' ]
 
-#table = []
-#labels = []
-#for swapTerm in swaps:
-#    print(swapTerm)
-#    meanReversions = []
-#    variances = []
-#    for expiry in expiries[swapTerm]:
-#        helper = PremiumHelper(expiry, swapTerm,
-#                     physicalySettledPremium[expiryTerms.index(expiry)][swapTerms.index(swapTerm)],
-#                     cashSettledPremium[expiryTerms.index(expiry)][swapTerms.index(swapTerm)])
-#        meanReversion = helper.meanReversion()
-#        sw1 = helper.cashPhysicalSwitchModel(helper.HullWhiteModel(meanReversion-0.01))
-#        sw2 = helper.cashPhysicalSwitchModel(helper.HullWhiteModel(meanReversion+0.01))
-#        variance = 0.02 / (sw2 - sw1)
-#        print(expiry + '-' + swapTerm + ': MR: ' + str(meanReversion) + ', Var: ' + str(variance), flush=True )
-#        meanReversions.append(meanReversion*100.0)
-#        variances.append(variance*100.0)
-#    # we plot the results
-#    plt.figure(figsize=(8, 4))
-#    plt.errorbar(expTimes[swapTerm],meanReversions,variances,fmt='r-*')
-#    plt.xlim(0.0,32.0)
-#    plt.ylim(-10.0,5.0)
-#    plt.xlabel('time to expiry (y)')
-#    plt.ylabel('implied mean reversion (%)')
-#    plt.title(swapTerm + ' swap term')
-#    plt.tight_layout()
-#    # save data for later use
-#    table = table + [expTimes[swapTerm], meanReversions, variances ]
-#    labels = labels + [ swapTerm+'-Times', swapTerm+'-MeanReversion', swapTerm+'-Variance' ]
-#plt.show()
-#frame = pandas.DataFrame(table).T
-#frame.columns = labels
-#frame.to_csv('MeanReversionFromCPSwitches.csv', index=False)
+table = []
+labels = []
+for swapTerm in swaps:
+    print(swapTerm)
+    meanReversions = []
+    variances = []
+    for expiry in expiries[swapTerm]:
+        helper = PremiumHelper(expiry, swapTerm,
+                     physicalySettledPremium[expiryTerms.index(expiry)][swapTerms.index(swapTerm)],
+                     cashSettledPremium[expiryTerms.index(expiry)][swapTerms.index(swapTerm)])
+        meanReversion = helper.meanReversion()
+        sw1 = helper.cashPhysicalSwitchModel(helper.HullWhiteModel(meanReversion-0.01))
+        sw2 = helper.cashPhysicalSwitchModel(helper.HullWhiteModel(meanReversion+0.01))
+        variance = 0.02 / (sw2 - sw1)
+        print(expiry + '-' + swapTerm + ': MR: ' + str(meanReversion) + ', Var: ' + str(variance), flush=True )
+        meanReversions.append(meanReversion*100.0)
+        variances.append(variance*100.0)
+    # we plot the results
+    plt.figure(figsize=(8, 4))
+    plt.errorbar(expTimes[swapTerm],meanReversions,variances,fmt='r-*')
+    plt.xlim(0.0,32.0)
+    plt.ylim(-10.0,5.0)
+    plt.xlabel('time to expiry (y)')
+    plt.ylabel('implied mean reversion (%)')
+    plt.title(swapTerm + ' swap term')
+    plt.tight_layout()
+    # save data for later use
+    table = table + [expTimes[swapTerm], meanReversions, variances ]
+    labels = labels + [ swapTerm+'-Times', swapTerm+'-MeanReversion', swapTerm+'-Variance' ]
+plt.show()
+frame = pandas.DataFrame(table).T
+frame.columns = labels
+frame.to_csv('MeanReversionFromCPSwitches.csv', index=False)
 
 
 # we use saved data and create additional plots
