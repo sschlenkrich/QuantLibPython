@@ -22,7 +22,7 @@ from Swaption import Swaption, createSwaption, HullWhiteModelFromSwaption, CashS
 
 from PDESolver import PDESolver
 
-from AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression
+from AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression, AMCSolverCoterminalRateRegression, AMCSolverCoterminalRateOnlyExerciseRegression
 
 from Regression import Regression, MultiIndexSet
 
