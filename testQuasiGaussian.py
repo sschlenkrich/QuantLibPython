@@ -74,7 +74,7 @@ theta = 0.1
 
 qgModel = ql.QuasiGaussianModel(hYts,d,times,sigma,slope,curve,eta,delta,chi,Gamma,theta)
 
-sw = SwaptionVolatility('swaptionATMVols2.csv',hYts,hYts)
+sw = SwaptionVolatility('swaptionATMVols.csv',hYts,hYts)
 
 index = ql.EuriborSwapIsdaFixA( ql.Period('1y'),hYts,hYts)
 indices = [ index.clone(ql.Period('2y')), index.clone(ql.Period('10y')) ]
@@ -87,7 +87,7 @@ input("Press Enter to continue...")
 qgCalib = ql.QGCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle(sw.volTS),indices,
               0.25,False,0.010,0.12,0.5,1.0,0.0,0.0,1.0,0.01,endCrit)
 print(qgCalib.debugLog())
-caModel = ql.QuasiGaussianModel(qgCalib.calibratedModel())
+caModel = qgCalib.calibratedModel()
 #caModel = qgModel
 
 print('Sigma:')

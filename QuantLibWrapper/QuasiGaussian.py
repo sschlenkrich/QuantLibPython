@@ -48,7 +48,7 @@ def McSimSmile(mcsim, expiryStr, swaptermStr, projYtsH, discYtsH):
         try:
             cop = 1 if strike>0 else -1
             swaption = ql.RealMCSwaption(time,cf.floatTimes(),cf.floatWeights(),cf.fixedTimes(),cf.annuityWeights(),S0+strike,cop)
-            price = ql.RealMCPricer_NPV([swaption],mcsim) / annuity
+            price = ql.RealMCPayoffPricer_NPV([swaption],mcsim) / annuity
             vol = BachelierImpliedVol(price,S0+strike,S0,time,cop)*1.0e+4
         except:
             vol = 0.0
