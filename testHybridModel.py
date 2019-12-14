@@ -59,6 +59,8 @@ print('Hybid Model details:')
 print('Size:     ' + str(model.size()))
 print('Factors:  ' + str(model.factors()))
 print('StartIdx: ' + str(model.modelsStartIdx()))
+#print(model.stateAliases())
+#print(model.factorAliases())
 
 input('Start MC simulation. Press enter...')
 simTimes = np.linspace(0.0,10.0,11)
