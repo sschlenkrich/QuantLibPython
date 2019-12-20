@@ -30,8 +30,8 @@ creditModel   = QuasiGaussianModel(0.01, 50e-4, 1e-2)
 # correlation [ x, x, c, c ]
 correlations = np.identity(4)
 # rates - credit corr
-correlations[0,2] = -0.5
-correlations[2,0] = -0.5
+correlations[0,2] = 0.1
+correlations[2,0] = 0.1
 
 model         = ql.SpreadModel(hybModel,creditModel,correlations)
 
@@ -64,8 +64,6 @@ print('Done.')
 
 times = np.array(simTimes[1:])
 nuadj = np.array(mcsim.numeraireAdjuster())
-plt.plot(times,nuadj*1e4)
-plt.show()
 
 pay = ql.RealMCPay(ql.RealMCFixedAmount(1.0),10.0)
 dfMc = ql.RealMCPayoffPricer_NPV([pay],mcsim)
@@ -73,4 +71,63 @@ dfCv = domRatesModel.termStructure().discount(10.0) * \
        creditModel.termStructure().discount(10.0)
 print(dfMc)
 print(dfCv)
+
+print('Test Forward Libors')
+
+today = ql.Settings.getEvaluationDate(ql.Settings.instance())
+index = ql.IborIndex('CIbor',ql.Period('3m'),0,
+    ql.EURCurrency(),ql.NullCalendar(),ql.Following,False,ql.Actual360(),
+    domRatesModel.termStructure())
+indexPayoff = ql.RealMCLiborRateCcy(1.0,index,domRatesModel.termStructure(),'EUR')
+
+times = np.linspace(1,10,10)
+dates = [ today + int(t*365) for t in times ]
+matis = [ index.maturityDate(d) for d in dates ]
+time = lambda d : ql.Actual365Fixed().yearFraction(today,d)
+
+payoffs = [ ql.RealMCPay(ql.RealMCLiborRateCcy(
+    time(d),index,domRatesModel.termStructure(),'EUR'),time(m))
+    for d,m in zip(dates,matis) ]
+keys = [ 'Libor'+str(k) for k in range(len(payoffs)) ]
+script = ql.RealMCScript(keys,payoffs,[],True)
+
+input('Start MC simulation. Press enter...')
+simTimes = script.observationTimes(keys)
+obsTimes = simTimes
+mcsim = ql.RealMCSimulation(model,simTimes,obsTimes,pow(2,15),1234)
+mcsim.simulate()
+print('Done.')
+
+print('Price payoffs without numeraire adjuster... ', end='')
+npv = script.NPV(mcsim,keys)
+fwdLib = [ pv / domRatesModel.termStructure().discount(d) / creditModel.termStructure().discount(d) 
+           for pv,d in zip(npv,matis) ]
+indLib = [ index.fixing(d) for d in dates ]
+print('Done.')
+
+libTimes0 = np.array([ time(d) for d in dates ])
+libDiffs0 = np.array([ a-b for a,b in zip(indLib,fwdLib) ])
+
+print('Calculate numeraire adjuster... ', end='')
+mcsim.calculateNumeraireAdjuster(simTimes[1:])
+print('Done.')
+
+print('Price payoffs with numeraire adjuster... ', end='')
+npv = script.NPV(mcsim,keys)
+fwdLib = [ pv / domRatesModel.termStructure().discount(d) / creditModel.termStructure().discount(d) 
+           for pv,d in zip(npv,matis) ]
+indLib = [ index.fixing(d) for d in dates ]
+print('Done.')
+
+libTimes1 = np.array([ time(d) for d in dates ])
+libDiffs1 = np.array([ a-b for a,b in zip(indLib,fwdLib) ])
+
+plt.figure()
+plt.plot(times,nuadj*1e4, label='numeraire adjuster')
+plt.plot(libTimes0,libDiffs0*1e4, label='libor difference')
+plt.plot(libTimes1,libDiffs1*1e4, label='libor difference adj')
+
+plt.legend()
+plt.show()
+
 
