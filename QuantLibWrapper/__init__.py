@@ -15,3 +15,5 @@ from HullWhiteModel import HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
 from Payoffs import Pay, VanillaOption, CouponBond
 
 from BermudanOption import BermudanOption, EuropeanPayoff
+
+from Swaption import Swaption, createSwaption, HullWhiteModelFromSwaption, CashSettledSwaptionPayoff, CashPhysicalSwitchPayoff
