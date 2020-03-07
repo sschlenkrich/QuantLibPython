@@ -180,8 +180,9 @@ class Hw2fTsrModel(TerminalSwapRateModel):
         g = self.g()
         X1 = np.array([ (c - g[0]*x)/g[1] for x in X0 ])
         ax.plot(X0,X1, 'g-')
-        ax.set_xlabel('x1')
-        ax.set_ylabel('x2')
+        ax.set_xlabel(r'$x_1$')
+        ax.set_ylabel(r'$x_2$')
+        plt.tight_layout()
         return fig
 
     def plotTransformed(self, s=None):
@@ -211,8 +212,9 @@ class Hw2fTsrModel(TerminalSwapRateModel):
         g = self.g()
         X1 = np.array([ c/g[1] for x in X0 ])
         ax.plot(X0,X1, 'g-')
-        ax.set_xlabel('bar_x1')
-        ax.set_ylabel('bar_x2')
+        ax.set_xlabel(r'$\bar{x}_1$')
+        ax.set_ylabel(r'$\bar{x}_2$')
+        plt.tight_layout()
         return fig
 
 
