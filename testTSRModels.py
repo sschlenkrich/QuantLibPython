@@ -218,8 +218,19 @@ plt.xlabel(r'$T_p - T_0$')
 plt.ylabel(r'$a(T_p) * An(0) / P(0,T_p)$')
 ax.set_title(r'HJM 2F CA factor per $\rho$ ($T_0=5$, $\Delta T=0.5$, 5y-Vol 100bp)')
 
+
+###################################################################################
+# 2-factor model 10y swaption test case
+###################################################################################
+
+# we set up a base model for nice contour line plots
+chi   = np.array([ 0.20, 0.05 ])
+sigma = np.array([ 0.02, 0.01 ])
+rho   = -0.50
+model2f  = scaleModel(HullWhiteModel2F(hYts,chi,sigma,rho),vol=0.01, T=T, dT=1.0/365.0)
+h2fModel = Hw2fTsrModel(model2f,5,10)
+
+h2fModel.plot()
+
 plt.show()
-exit()
-
-
 
