@@ -1,5 +1,6 @@
 import QuantLib as ql
 import numpy as np
+import matplotlib.pyplot as plt
 
 def QuasiGaussianModel(rate, sigma, mean):
     today = ql.Settings.getEvaluationDate(ql.Settings.instance())
@@ -38,20 +39,34 @@ forRatesModels = [
 
 correlations = np.identity(8)
 #correlations = np.identity(5)
+# USD-EUR - EUR
+correlations[0,2] = 0.5
+correlations[2,0] = 0.5
 # USD-EUR - USD
 correlations[2,3] = -0.5
 correlations[3,2] = -0.5
 # EUR - USD
-correlations[0,3] = -0.3
-correlations[3,0] = -0.3
+correlations[0,3] = -0.5
+correlations[3,0] = -0.5
+# GBP-EUR - EUR
+correlations[0,5] = -0.5
+correlations[5,0] = -0.5
 # GBP-EUR - GBP
 correlations[5,6] = 0.5
 correlations[6,5] = 0.5
+# EUR - GBP
+correlations[0,6] = -0.8
+correlations[6,0] = -0.8
 # USD - GBP
-correlations[3,6] = 0.3
-correlations[6,3] = 0.3
+correlations[3,6] = 0.0
+correlations[6,3] = 0.0
 
-model = ql.HybridModel(domAlias,domRatesModel,forAliases,forAssetModels,forRatesModels,correlations)
+# exogenous hybrid adjusters
+hybAdjTimes = [ 0.0, 1.0, 5.0, 10.0 ]
+hybVolAdj   = [ [ 0.00, 0.00, 0.00, 0.00 ],
+                [ 0.00, 0.00, 0.00, 0.00 ] ]
+
+model = ql.HybridModel(domAlias,domRatesModel,forAliases,forAssetModels,forRatesModels,correlations,hybAdjTimes,hybVolAdj)
 #model = ql.HybridModel(domAlias,domRatesModel,forAliases[:1],forAssetModels[:1],forRatesModels[:1],correlations)
 
 # we print some basic model stats
@@ -59,13 +74,40 @@ print('Hybid Model details:')
 print('Size:     ' + str(model.size()))
 print('Factors:  ' + str(model.factors()))
 print('StartIdx: ' + str(model.modelsStartIdx()))
-#print(model.stateAliases())
-#print(model.factorAliases())
+print('States:   ' + str(model.stateAliases()))
+print('Factors:  ' + str(model.factorAliases()))
+
+print('Hybrid volatility adjusters:')
+input('Press enter...')
+model.recalculateHybridVolAdjuster(np.linspace(0.0,20.0,21))
+times = np.linspace(0.0,20.0,21)
+adj0 = np.array([ model.hybridVolAdjuster(0,t) for t in times ])
+adj1 = np.array([ model.hybridVolAdjuster(1,t) for t in times ])
+for t,a,b in zip(times,adj0,adj1):
+    print(' %4.1f  %6.3f  %6.3f' % (t,a*1e2,b*1e2))
+
+# print(model.localVol())
+
+plt.figure()
+plt.plot(times,adj0*1e2,label='USD-EUR')
+plt.xlabel('time (years)')
+plt.ylabel(r'$\delta\sigma_{X_i}$ (%)')
+plt.legend()
+
+plt.figure()
+plt.plot(times,adj1*1e2,label='GBP-EUR')
+plt.xlabel('time (years)')
+plt.ylabel(r'$\delta\sigma_{X_i}$ (%)')
+plt.legend()
+
+plt.show()
+exit()
 
 input('Start MC simulation. Press enter...')
 simTimes = np.linspace(0.0,10.0,11)
 obsTimes = simTimes
-mcsim = ql.RealMCSimulation(model,simTimes,obsTimes,pow(2,13),1234)
+# mcsim = ql.RealMCSimulation(model,simTimes,obsTimes,pow(2,13),1234)
+mcsim = ql.RealMCSimulation(model,simTimes,obsTimes,pow(2,17),1234)
 mcsim.simulate()
 print('Done.')
 
@@ -162,6 +204,88 @@ print('Model volatilities (bp) EUR = %4.1f, USD = %4.1f, GBP = %4.1f' % \
       (sigX*1e4, sigY*1e4, sigZ*1e4))
 print('Rates correlation EUR-USD = %4.1f, EUR-GBP = %4.1f, USD-GBP = %4.1f' % \
       (corXY*1e2, corXZ*1e2, corYZ*1e2))
+
+
+# we test FX volatility and stochastic rates adjustment
+expTimes = np.linspace(1.0, 10.0, 10)
+
+# USD-EUR termstructure
+usdEurAtm = [ 1.0 * forRatesModels[0].termStructure().discount(t) / \
+    domRatesModel.termStructure().discount(t) 
+    for t in expTimes ]
+
+usdEurOpt = [ ql.RealMCVanillaOption(t,'USD',K,1.0)
+    for t,K in zip(expTimes,usdEurAtm) ]
+
+usdEurPvs = ql.RealMCPayoffPricer_NPVs(usdEurOpt,mcsim)
+
+usdEurVol = [ ql.blackFormulaImpliedStdDev(ql.Option.Call,K,K,npv / \
+    domRatesModel.termStructure().discount(t)) / np.sqrt(t) \
+    for t,K,npv in zip(expTimes,usdEurAtm,usdEurPvs) ]
+
+print('USD-EUR implied ATM vol termstructure:')
+for t,K,v in zip(expTimes,usdEurAtm,usdEurVol):
+    print('  %4.1f  %6.3f  %4.1f' % (t,K,v*1e2))
+
+# GBP-EUR termstructure
+gbpEurAtm = [ 2.0 * forRatesModels[1].termStructure().discount(t) / \
+    domRatesModel.termStructure().discount(t) 
+    for t in expTimes ]
+
+gbpEurOpt = [ ql.RealMCVanillaOption(t,'GBP',K,1.0)
+    for t,K in zip(expTimes,gbpEurAtm) ]
+
+gbpEurPvs = ql.RealMCPayoffPricer_NPVs(gbpEurOpt,mcsim)
+
+gbpEurVol = [ ql.blackFormulaImpliedStdDev(ql.Option.Call,K,K,npv / \
+    domRatesModel.termStructure().discount(t)) / np.sqrt(t) \
+    for t,K,npv in zip(expTimes,gbpEurAtm,gbpEurPvs) ]
+
+print('GBP-EUR implied ATM vol termstructure:')
+for t,K,v in zip(expTimes,gbpEurAtm,gbpEurVol):
+    print('  %4.1f  %6.3f  %4.1f' % (t,K,v*1e2))
+
+# smiles
+expTime    = expTimes[-1]
+relstrikes = np.linspace(-1.0, 1.0, 9)
+
+# USD-EUR smile
+usdEurAtm    = usdEurAtm[-1]
+usdEurAtmVol = usdEurVol[-1]
+usdEurStrikes = np.exp(usdEurAtmVol*relstrikes*np.sqrt(expTime))
+
+usdEurOpt = [ ql.RealMCVanillaOption(expTime,'USD',K,2.0*(usdEurAtm>K)-1.0)
+    for K in usdEurStrikes ]
+
+usdEurPvs = ql.RealMCPayoffPricer_NPVs(usdEurOpt,mcsim)
+
+usdEurVol = [ ql.blackFormulaImpliedStdDev(ql.Option.Call if usdEurAtm>K else ql.Option.Put,
+    K,usdEurAtm,npv / domRatesModel.termStructure().discount(expTime)) / np.sqrt(expTime) \
+    for K,npv in zip(usdEurStrikes,usdEurPvs) ]
+
+print('USD-EUR implied vol smile (%4.1f years):' % expTime)
+for K,v in zip(usdEurStrikes,usdEurVol):
+    print('  %6.3f  %4.1f' % (K,v*1e2))
+
+# GBP-EUR smile
+gbpEurAtm    = gbpEurAtm[-1]
+gbpEurAtmVol = gbpEurVol[-1]
+gbpEurStrikes = np.exp(1.0*gbpEurAtmVol*relstrikes*np.sqrt(expTime))
+
+gbpEurOpt = [ ql.RealMCVanillaOption(expTime,'GBP',K,2.0*(gbpEurAtm>K)-1.0)
+    for K in gbpEurStrikes ]
+
+gbpEurPvs = ql.RealMCPayoffPricer_NPVs(gbpEurOpt,mcsim)
+
+gbpEurVol = [ ql.blackFormulaImpliedStdDev(ql.Option.Call if gbpEurAtm>K else ql.Option.Put,
+    K,gbpEurAtm,npv / domRatesModel.termStructure().discount(expTime)) / np.sqrt(expTime) \
+    for K,npv in zip(gbpEurStrikes,gbpEurPvs) ]
+
+print('GBP-EUR implied vol smile (%4.1f years):' % expTime)
+for K,v in zip(gbpEurStrikes,gbpEurVol):
+    print('  %6.3f  %4.1f' % (K,v*1e2))
+
+exit()
 
 
 # we test a rates only hybrid model

@@ -77,7 +77,7 @@ def Min(x, y):
 def Libor(t=1.0, term='1y', alias=None):
         today = ql.Settings.getEvaluationDate(ql.Settings.instance())
         ytsH = ql.YieldTermStructureHandle(ql.FlatForward(today,0.0,ql.Actual365Fixed()))
-        index = ql.IborIndex('None',ql.Period(term),0,ql.EURCurrency(),ql.NullCalendar(),ql.Unadjusted,False,ql.Actual365Fixed(),ytsH)
+        index = ql.IborIndex('None',ql.Period(term),2,ql.EURCurrency(),ql.NullCalendar(),ql.Unadjusted,False,ql.Actual365Fixed(),ytsH)
         if alias:
             libor = Payoff(ql.RealMCLiborRateCcy(t,index,ytsH,alias))
         else:
@@ -107,6 +107,11 @@ def AmcOne(x, y, z=None, obsTime=0.0, largerOrLess=1.0, sim=None, maxPolyDegree=
     y = __makeQlPayoffList(y)
     z = __makeQlPayoffList(z)
     return Payoff(ql.RealAMCOne(x,y,z,obsTime,largerOrLess,sim,maxPolyDegree))
+
+def AmcSum(x, z=[], obsTime=0.0, sim=None, maxPolyDegree=2):
+    x = __makeQlPayoffList(x)
+    z = __makeQlPayoffList(z)
+    return Payoff(ql.RealAMCSum(x,z,obsTime,sim,maxPolyDegree))
 
 # conversions to raw QuantLib payoff types
 
