@@ -17,7 +17,7 @@ hYts = ql.YieldTermStructureHandle(
            ql.FlatForward(ql.Settings.getEvaluationDate(ql.Settings.instance()),
                           0.03,ql.Actual365Fixed()))
 
-sw = SwaptionVolatility('swaptionATMVols2.csv',hYts,hYts)
+sw = SwaptionVolatility('swaptionATMVols.csv',hYts,hYts)
 
 index = ql.EuriborSwapIsdaFixA( ql.Period('10y'),hYts,hYts)
 

@@ -125,7 +125,7 @@ qgCalib = ql.QGMonteCarloCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle
 simul = qgCalib.mcSimulation()
 
 print(qgCalib.debugLog())
-caModel = ql.QuasiGaussianModel(qgCalib.calibratedModel())
+caModel = qgCalib.calibratedModel()
 
 print('Sigma:')
 print(np.array(caModel.sigma()))

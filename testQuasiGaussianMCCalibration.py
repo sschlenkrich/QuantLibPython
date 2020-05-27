@@ -100,7 +100,7 @@ qgCalib = ql.QGMonteCarloCalibrator(qgModel,ql.SwaptionVolatilityStructureHandle
               1.0,1000,0.010,0.12,0.5,10.0,0.0,0.0,1.0,1.0,1.0,endCrit)
 
 print(qgCalib.debugLog())
-caModel = ql.QuasiGaussianModel(qgCalib.calibratedModel())
+caModel = qgCalib.calibratedModel()
 #caModel = qgModel
 
 print('Sigma:')
