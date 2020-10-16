@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.optimize import brentq
-from Helpers import Black, Bachelier, BachelierImpliedVol
+from QuantLibWrapper.Helpers import Black, Bachelier, BachelierImpliedVol
 
 class HullWhiteModel:
 

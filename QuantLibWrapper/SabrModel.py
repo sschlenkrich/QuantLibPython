@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.optimize import brentq
-from Helpers import Bachelier, BachelierImpliedVol
+from QuantLibWrapper.Helpers import Bachelier, BachelierImpliedVol
 
 class SabrModel:
 

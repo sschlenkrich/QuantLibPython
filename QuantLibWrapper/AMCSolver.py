@@ -2,9 +2,8 @@
 
 import numpy as np
 
-from Regression import Regression
-
-from Payoffs import SwapRate
+from QuantLibWrapper.Regression import Regression
+from QuantLibWrapper.Payoffs import SwapRate
 
 class AMCSolver:
 

@@ -1,5 +1,3 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,13 +7,14 @@ import pandas
 
 import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
-
-from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs, BermudanOption, \
-                            DensityIntegrationWithBreakEven, SimpsonIntegration, \
-                            HermiteIntegration, CubicSplineExactIntegration, \
-                            PDESolver, AMCSolver, \
-                            AMCSolverOnlyExerciseRegression, \
-                            HullWhiteModelWithDiscreteNumeraire 
+from QuantLibWrapper.HullWhiteModel import HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
+from QuantLibWrapper.MCSimulation import MCSimulation
+from QuantLibWrapper import Payoffs
+from QuantLibWrapper.BermudanOption import BermudanOption
+from QuantLibWrapper.DensityIntegrations import DensityIntegrationWithBreakEven, \
+    SimpsonIntegration, HermiteIntegration, CubicSplineExactIntegration
+from QuantLibWrapper.PDESolver import PDESolver
+from QuantLibWrapper.AMCSolver import AMCSolver, AMCSolverOnlyExerciseRegression
 
 # yield curves
 

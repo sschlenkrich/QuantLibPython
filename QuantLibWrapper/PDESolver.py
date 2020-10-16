@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.sparse import diags
 
-from ThetaMethod import thetaStep
+from QuantLibWrapper.ThetaMethod import thetaStep
 
 class PDESolver:
 

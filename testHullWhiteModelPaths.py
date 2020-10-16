@@ -1,5 +1,3 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 from scipy.optimize import brentq
@@ -12,7 +10,9 @@ import pandas
 import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
 
-from QuantLibWrapper import HullWhiteModel, MCSimulation, Payoffs
+from QuantLibWrapper.HullWhiteModel import HullWhiteModel
+from QuantLibWrapper.MCSimulation import MCSimulation
+from QuantLibWrapper import Payoffs
 
 # yield curves
 

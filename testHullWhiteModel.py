@@ -1,5 +1,3 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +8,10 @@ import pandas
 import QuantLib as ql
 import QuantLibWrapper.YieldCurve as yc
 
-from QuantLibWrapper import MCSimulation, Payoffs, HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
+from QuantLibWrapper.MCSimulation import MCSimulation
+from QuantLibWrapper import Payoffs
+from QuantLibWrapper.HullWhiteModel import HullWhiteModel, HullWhiteModelWithDiscreteNumeraire
+
 # yield curves
 
 flatCurve = yc.YieldCurve(['30y'],[0.03])

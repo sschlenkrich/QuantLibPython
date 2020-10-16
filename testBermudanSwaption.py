@@ -1,5 +1,3 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 from scipy.optimize import brentq
@@ -13,7 +11,12 @@ import pandas
 
 import QuantLib as ql
 
-from QuantLibWrapper import YieldCurve, HullWhiteModel, Swap, Swaption, createSwaption, BermudanSwaption
+from QuantLibWrapper.YieldCurve import YieldCurve 
+from QuantLibWrapper.HullWhiteModel import HullWhiteModel
+from QuantLibWrapper.Swap import Swap
+from QuantLibWrapper.Swaption import Swaption, createSwaption
+from QuantLibWrapper.BermudanSwaption import BermudanSwaption
+
 
 # curves and vols
 

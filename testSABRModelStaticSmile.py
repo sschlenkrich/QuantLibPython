@@ -1,11 +1,10 @@
-import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__),'QuantLibWrapper'))
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-from QuantLibWrapper import SabrModel, MCSimulation
+from QuantLibWrapper.SabrModel import SabrModel
+from QuantLibWrapper.MCSimulation import MCSimulation
 
 # SabrModel( S(t), T, alpha, beta, nu, rho )
 model1 = SabrModel(0.05,1.0,0.0100,0.0001,0.0001,0.0,shift=0.1)

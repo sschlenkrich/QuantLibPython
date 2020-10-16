@@ -6,10 +6,10 @@ import QuantLib as ql
 import numpy as np
 from scipy.optimize import brentq
 
-from Helpers import Bachelier, BachelierImpliedVol, BachelierVega
-from Swap import Swap
-from Payoffs import CouponBond
-from HullWhiteModel import HullWhiteModel
+from QuantLibWrapper.Helpers import Bachelier, BachelierImpliedVol, BachelierVega
+from QuantLibWrapper.Swap import Swap
+from QuantLibWrapper.Payoffs import CouponBond
+from QuantLibWrapper.HullWhiteModel import HullWhiteModel
 
 class Swaption:
 

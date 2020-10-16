@@ -7,3 +7,4 @@ QuantLibWrapper/__pycache__/
 *.zip
 *.pyc
 QuantLibWrapper/*.pyc
+tmp/
