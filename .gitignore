@@ -6,3 +6,4 @@ QuantLibWrapper/__pycache__/
 *.xlsx
 *.pyc
 QuantLibWrapper/*.pyc
+tmp/
