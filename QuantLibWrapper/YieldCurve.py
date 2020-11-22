@@ -11,8 +11,8 @@ class YieldCurve:
     def __init__(self, terms, rates):
         today = ql.Settings.getEvaluationDate(ql.Settings.instance())
         self.terms = terms
-        self.dates = [ ql.WeekendsOnly().advance(today,ql.Period(term),ql.ModifiedFollowing) for term in terms ]
-        self.rates = rates
+        self.dates = [ ql.WeekendsOnly().advance(today,ql.Period(term),ql.ModifiedFollowing) for term in [ '0d' ] + terms ]
+        self.rates = [rates[0]] + rates
         # use rates as backward flat interpolated continuous compounded forward rates
         self.yts = ql.ForwardCurve(self.dates,self.rates,ql.Actual365Fixed(),ql.NullCalendar())
 
